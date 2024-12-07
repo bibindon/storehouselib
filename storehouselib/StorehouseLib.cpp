@@ -163,14 +163,16 @@ std::string StorehouseLib::Into()
     std::string result;
     if (m_eFocus == eFocus::LEFT)
     {
-        result = m_leftList.at(m_leftSelect).GetName();
+        result = "left:";
+        result += m_leftList.at(m_leftSelect).GetName();
         result += ":" + std::to_string(m_leftList.at(m_leftSelect).GetId());
         result += ":" + std::to_string(m_leftList.at(m_leftSelect).GetSubId());
         m_SE->PlayClick();
     }
     else if (m_eFocus == eFocus::RIGHT)
     {
-        result = m_rightList.at(m_rightSelect).GetName();
+        result = "right:";
+        result += m_rightList.at(m_rightSelect).GetName();
         result += ":" + std::to_string(m_rightList.at(m_rightSelect).GetId());
         result += ":" + std::to_string(m_rightList.at(m_rightSelect).GetSubId());
         m_SE->PlayClick();
