@@ -32,12 +32,12 @@ void StorehouseLib::Init(IFont* font,
     m_sprPanelTop = sprPanelTop;
 }
 
-void NSStorehouseLib::StorehouseLib::SetInventoryList(const std::vector<std::string>& arg)
+void NSStorehouseLib::StorehouseLib::SetInventoryList(const std::vector<StoreItem>& arg)
 {
     m_leftList = arg;
 }
 
-void NSStorehouseLib::StorehouseLib::SetStorehouseList(const std::vector<std::string>& arg)
+void NSStorehouseLib::StorehouseLib::SetStorehouseList(const std::vector<StoreItem>& arg)
 {
     m_rightList = arg;
 }
@@ -163,12 +163,16 @@ std::string StorehouseLib::Into()
     std::string result;
     if (m_eFocus == eFocus::LEFT)
     {
-        result = m_leftList.at(m_leftSelect);
+        result = m_leftList.at(m_leftSelect).GetName();
+        result += ":" + std::to_string(m_leftList.at(m_leftSelect).GetId());
+        result += ":" + std::to_string(m_leftList.at(m_leftSelect).GetSubId());
         m_SE->PlayClick();
     }
     else if (m_eFocus == eFocus::RIGHT)
     {
-        result = m_rightList.at(m_rightSelect);
+        result = m_rightList.at(m_rightSelect).GetName();
+        result += ":" + std::to_string(m_rightList.at(m_rightSelect).GetId());
+        result += ":" + std::to_string(m_rightList.at(m_rightSelect).GetSubId());
         m_SE->PlayClick();
     }
     return result;
@@ -607,7 +611,7 @@ void StorehouseLib::Draw()
     {
         for (int i = m_leftBegin; i < m_leftBegin + PANEL_ROW_MAX; ++i)
         {
-            m_font->DrawText_(m_leftList.at(i),
+            m_font->DrawText_(m_leftList.at(i).GetName(),
                               LEFT_PANEL_STARTX + PANEL_PADDINGX,
                               LEFT_PANEL_STARTY + PANEL_PADDINGY + ((i - m_leftBegin) * PANEL_HEIGHT));
         }
@@ -616,7 +620,7 @@ void StorehouseLib::Draw()
     {
         for (std::size_t i = 0; i < m_leftList.size(); ++i)
         {
-            m_font->DrawText_(m_leftList.at(i),
+            m_font->DrawText_(m_leftList.at(i).GetName(),
                               LEFT_PANEL_STARTX + PANEL_PADDINGX,
                               LEFT_PANEL_STARTY + PANEL_PADDINGY + ((int)i * PANEL_HEIGHT));
         }
@@ -627,7 +631,7 @@ void StorehouseLib::Draw()
     {
         for (int i = m_rightBegin; i < m_rightBegin + PANEL_ROW_MAX; ++i)
         {
-            m_font->DrawText_(m_rightList.at(i),
+            m_font->DrawText_(m_rightList.at(i).GetName(),
                               RIGHT_PANEL_STARTX + PANEL_PADDINGX,
                               RIGHT_PANEL_STARTY + PANEL_PADDINGY + ((i - m_rightBegin) * PANEL_HEIGHT));
         }
@@ -636,7 +640,7 @@ void StorehouseLib::Draw()
     {
         for (std::size_t i = 0; i < m_rightList.size(); ++i)
         {
-            m_font->DrawText_(m_rightList.at(i),
+            m_font->DrawText_(m_rightList.at(i).GetName(),
                               RIGHT_PANEL_STARTX + PANEL_PADDINGX,
                               RIGHT_PANEL_STARTY + PANEL_PADDINGY + ((int)i * PANEL_HEIGHT));
         }
@@ -655,3 +659,32 @@ void StorehouseLib::Draw()
 
 }
 
+void NSStorehouseLib::StoreItem::SetId(const int arg)
+{
+    m_id = arg;
+}
+
+int NSStorehouseLib::StoreItem::GetId() const
+{
+    return m_id;
+}
+
+void NSStorehouseLib::StoreItem::SetSubId(const int arg)
+{
+    m_idSub = arg;
+}
+
+int NSStorehouseLib::StoreItem::GetSubId() const
+{
+    return m_idSub;
+}
+
+void NSStorehouseLib::StoreItem::SetName(const std::string& arg)
+{
+    m_name = arg;
+}
+
+std::string NSStorehouseLib::StoreItem::GetName() const
+{
+    return m_name;
+}

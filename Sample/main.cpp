@@ -282,41 +282,31 @@ HRESULT InitD3D(HWND hWnd)
 
     menu.Init(pFont, pSE, sprCursor, sprBackground, sprPanelLeft, sprPanelTop);
     {
-        std::vector<std::string> vs;
+        std::vector<StoreItem> vs;
 
-        vs.push_back("アイテムＡＡＡ");
-        vs.push_back("武器ＢＢＢ");
-        vs.push_back("アイテムＣ");
-        vs.push_back("アイテムＤ");
-        vs.push_back("アイテムＥ");
-        vs.push_back("アイテムＦ");
-        vs.push_back("アイテムＧ");
-        vs.push_back("アイテムＨ");
-        vs.push_back("アイテムＩ");
-        vs.push_back("アイテムＪ");
-        vs.push_back("アイテムＫ");
-        vs.push_back("アイテムＬ");
-        vs.push_back("アイテムＭ");
-        vs.push_back("アイテムＮ");
-        vs.push_back("アイテムＯ");
-        vs.push_back("アイテムＰ");
+        for (int i = 0; i < 20; ++i)
+        {
+            StoreItem storeItem;
+            storeItem.SetId(1);
+            storeItem.SetSubId(1);
+            std::string work;
+            work = "アイテムＡＡＡ" + std::to_string(i);
+            storeItem.SetName(work);
+            vs.push_back(storeItem);
+        }
         menu.SetInventoryList(vs);
-
         vs.clear();
-        vs.push_back("アイテム１");
-        vs.push_back("アイテム２");
-        vs.push_back("アイテム３");
-        vs.push_back("アイテム４");
-        vs.push_back("アイテム５");
-        vs.push_back("アイテム６");
-        vs.push_back("アイテム７");
-        vs.push_back("アイテム８");
-        vs.push_back("アイテム９");
-        vs.push_back("アイテム１０");
-        vs.push_back("アイテム１１");
-        vs.push_back("アイテム１２");
-        vs.push_back("アイテム１３");
-        vs.push_back("アイテム１４");
+
+        for (int i = 0; i < 20; ++i)
+        {
+            StoreItem storeItem;
+            storeItem.SetId(1);
+            storeItem.SetSubId(1);
+            std::string work;
+            work = "アイテムＢＢＢ" + std::to_string(i);
+            storeItem.SetName(work);
+            vs.push_back(storeItem);
+        }
         menu.SetStorehouseList(vs);
     }
 

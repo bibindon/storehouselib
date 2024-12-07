@@ -34,6 +34,25 @@ public:
     virtual ~ISoundEffect() {};
 };
 
+class StoreItem
+{
+public:
+    void SetId(const int arg);
+    int GetId() const;
+
+    void SetSubId(const int arg);
+    int GetSubId() const;
+
+    void SetName(const std::string& arg);
+    std::string GetName() const;
+
+private:
+
+    int m_id;
+    int m_idSub;
+    std::string m_name;
+};
+
 class StorehouseLib
 {
 public:
@@ -45,8 +64,8 @@ public:
               ISprite* sprPanel,
               ISprite* sprPanelTop);
 
-    void SetInventoryList(const std::vector<std::string>& arg);
-    void SetStorehouseList(const std::vector<std::string>& arg);
+    void SetInventoryList(const std::vector<StoreItem>& arg);
+    void SetStorehouseList(const std::vector<StoreItem>& arg);
 
     std::string Up();
     std::string Down();
@@ -76,8 +95,8 @@ private:
     ISoundEffect* m_SE;
     eFocus m_eFocus = eFocus::LEFT;
 
-    std::vector<std::string> m_leftList;
-    std::vector<std::string> m_rightList;
+    std::vector<StoreItem> m_leftList;
+    std::vector<StoreItem> m_rightList;
 
     const int PANEL_PADDINGX = 50;
     const int PANEL_PADDINGY = 13;
