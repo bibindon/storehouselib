@@ -67,6 +67,9 @@ public:
     void SetInventoryList(const std::vector<StoreItem>& arg);
     void SetStorehouseList(const std::vector<StoreItem>& arg);
 
+    void MoveFromInventoryToStorehouse(const int id, const int subid);
+    void MoveFromStorehouseToInventory(const int id, const int subid);
+
     std::string Up();
     std::string Down();
     std::string Right();

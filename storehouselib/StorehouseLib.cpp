@@ -1,5 +1,6 @@
 #include "StorehouseLib.h"
 #include <sstream>
+#include <algorithm>
 
 using namespace NSStorehouseLib;
 
@@ -40,6 +41,90 @@ void NSStorehouseLib::StorehouseLib::SetInventoryList(const std::vector<StoreIte
 void NSStorehouseLib::StorehouseLib::SetStorehouseList(const std::vector<StoreItem>& arg)
 {
     m_rightList = arg;
+}
+
+void NSStorehouseLib::StorehouseLib::MoveFromInventoryToStorehouse(const int id, const int subid)
+{
+    auto it = std::find_if(m_leftList.begin(), m_leftList.end(),
+                           [&](const StoreItem& x)
+                           {
+                               return x.GetId() == id && x.GetSubId() == subid;
+                           });
+
+    if (it == m_leftList.end())
+    {
+        throw std::exception();
+    }
+
+    m_leftList.erase(it);
+    m_rightList.push_back(*it);
+    std::sort(m_rightList.begin(), m_rightList.end(),
+              [&](const StoreItem& left, const StoreItem& right)
+              {
+                  if (left.GetId() < right.GetId())
+                  {
+                      return true;
+                  }
+                  else if (left.GetId() > right.GetId())
+                  {
+                      return false;
+                  }
+                  // left.GetId() == right.GetId()
+                  else
+                  {
+                      if (left.GetSubId() < right.GetSubId())
+                      {
+						  return true;
+                      }
+                      //  left.GetSubId() >= right.GetSubId()
+                      else
+                      {
+						  return true;
+                      }
+                  }
+              });
+}
+
+void NSStorehouseLib::StorehouseLib::MoveFromStorehouseToInventory(const int id, const int subid)
+{
+    auto it = std::find_if(m_rightList.begin(), m_rightList.end(),
+                           [&](const StoreItem& x)
+                           {
+                               return x.GetId() == id && x.GetSubId() == subid;
+                           });
+
+    if (it == m_rightList.end())
+    {
+        throw std::exception();
+    }
+
+    m_rightList.erase(it);
+    m_leftList.push_back(*it);
+    std::sort(m_leftList.begin(), m_leftList.end(),
+              [&](const StoreItem& left, const StoreItem& right)
+              {
+                  if (left.GetId() < right.GetId())
+                  {
+                      return true;
+                  }
+                  else if (left.GetId() > right.GetId())
+                  {
+                      return false;
+                  }
+                  // left.GetId() == right.GetId()
+                  else
+                  {
+                      if (left.GetSubId() < right.GetSubId())
+                      {
+						  return true;
+                      }
+					  //  left.GetSubId() >= right.GetSubId()
+                      else
+                      {
+						  return true;
+                      }
+                  }
+              });
 }
 
 std::string StorehouseLib::Up()
