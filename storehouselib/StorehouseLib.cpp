@@ -81,7 +81,7 @@ void NSStorehouseLib::StorehouseLib::MoveFromInventoryToStorehouse(const int id,
                       //  left.GetSubId() >= right.GetSubId()
                       else
                       {
-						  return true;
+						  return false;
                       }
                   }
               });
@@ -125,7 +125,7 @@ void NSStorehouseLib::StorehouseLib::MoveFromStorehouseToInventory(const int id,
 					  //  left.GetSubId() >= right.GetSubId()
                       else
                       {
-						  return true;
+						  return false;
                       }
                   }
               });
