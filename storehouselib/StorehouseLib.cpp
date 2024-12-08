@@ -56,8 +56,10 @@ void NSStorehouseLib::StorehouseLib::MoveFromInventoryToStorehouse(const int id,
         throw std::exception();
     }
 
+    StoreItem item = *it;
     m_leftList.erase(it);
-    m_rightList.push_back(*it);
+    m_rightList.push_back(item);
+
     std::sort(m_rightList.begin(), m_rightList.end(),
               [&](const StoreItem& left, const StoreItem& right)
               {
@@ -98,8 +100,10 @@ void NSStorehouseLib::StorehouseLib::MoveFromStorehouseToInventory(const int id,
         throw std::exception();
     }
 
+    StoreItem item = *it;
     m_rightList.erase(it);
-    m_leftList.push_back(*it);
+    m_leftList.push_back(item);
+
     std::sort(m_leftList.begin(), m_leftList.end(),
               [&](const StoreItem& left, const StoreItem& right)
               {
