@@ -48,8 +48,8 @@ public:
 
 private:
 
-    int m_id;
-    int m_idSub;
+    int m_id = 0;
+    int m_idSub = 0;
     std::string m_name;
 };
 
@@ -90,12 +90,12 @@ private:
         RIGHT,
     };
 
-    ISprite* m_sprCursor;
-    ISprite* m_sprBackground;
-    ISprite* m_sprPanel;
-    ISprite* m_sprPanelTop;
-    IFont* m_font;
-    ISoundEffect* m_SE;
+    ISprite* m_sprCursor = nullptr;
+    ISprite* m_sprBackground = nullptr;
+    ISprite* m_sprPanel = nullptr;
+    ISprite* m_sprPanelTop = nullptr;
+    IFont* m_font = nullptr;
+    ISoundEffect* m_SE = nullptr;
     eFocus m_eFocus = eFocus::LEFT;
 
     std::vector<StoreItem> m_leftList;
