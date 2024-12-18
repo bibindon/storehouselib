@@ -1,8 +1,8 @@
 #pragma comment( lib, "d3d9.lib" )
-#if defined(DEBUG) || defined(_DEBUG)
-#pragma comment( lib, "d3dx9d.lib" )
-#else
+#if defined(NDEBUG)
 #pragma comment( lib, "d3dx9.lib" )
+#else
+#pragma comment( lib, "d3dx9d.lib" )
 #endif
 
 #pragma comment (lib, "winmm.lib")
