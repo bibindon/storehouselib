@@ -14,6 +14,22 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <string>
+#include <vector>
+#include <sstream>
+
+std::vector<std::string> split(const std::string& s, char delim)
+{
+    std::vector<std::string> result;
+    std::stringstream ss(s);
+    std::string item;
+
+    while (getline(ss, item, delim))
+    {
+        result.push_back(item);
+    }
+
+    return result;
+}
 
 using namespace NSStorehouseLib;
 
@@ -284,10 +300,10 @@ HRESULT InitD3D(HWND hWnd)
     {
         std::vector<StoreItem> vs;
 
-        for (int i = 0; i < 20; ++i)
+        for (int i = 0; i < 15; ++i)
         {
             StoreItem storeItem;
-            storeItem.SetId(1);
+            storeItem.SetId(i);
             storeItem.SetSubId(1);
             std::string work;
             work = "ƒAƒCƒeƒ€‚`‚`‚`" + std::to_string(i);
@@ -300,7 +316,7 @@ HRESULT InitD3D(HWND hWnd)
         for (int i = 0; i < 20; ++i)
         {
             StoreItem storeItem;
-            storeItem.SetId(1);
+            storeItem.SetId(i+30);
             storeItem.SetSubId(1);
             std::string work;
             work = "ƒAƒCƒeƒ€‚a‚a‚a" + std::to_string(i);
@@ -413,14 +429,20 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case VK_RETURN:
         {
             std::string result = menu.Into();
-            if (result == "ƒ^ƒCƒgƒ‹")
+            auto vs = split(result, ':');
+
+            int id_ = std::stoi(vs.at(2));
+            int subId_ = std::stoi(vs.at(3));
+
+            if (vs.at(0) == "left")
             {
-                bShowMenu = false;
+                menu.MoveFromInventoryToStorehouse(id_, subId_);
             }
-            else if (result == "Å‰‚©‚ç")
+            else if (vs.at(0) == "right")
             {
-                bShowMenu = false;
+                menu.MoveFromStorehouseToInventory(id_, subId_);
             }
+
             break;
         }
         case VK_BACK:
