@@ -21,16 +21,12 @@ static std::vector<std::string> split(const std::string& s, char delim)
 void StorehouseLib::Init(IFont* font,
                          ISoundEffect* SE,
                          ISprite* sprCursor,
-                         ISprite* sprBackground,
-                         ISprite* sprPanel,
-                         ISprite* sprPanelTop)
+                         ISprite* sprBackground)
 {
     m_font = font;
     m_SE = SE;
     m_sprCursor = sprCursor;
     m_sprBackground = sprBackground;
-    m_sprPanel = sprPanel;
-    m_sprPanelTop = sprPanelTop;
 }
 
 void NSStorehouseLib::StorehouseLib::SetInventoryList(const std::vector<StoreItem>& arg)
@@ -608,42 +604,12 @@ void StorehouseLib::Draw()
     m_sprBackground->DrawImage(0, 0);
 
     // 上部分の左に「インベントリ」、右側に「倉庫」と表示する
-    m_sprPanelTop->DrawImage(150, 100);
     m_font->DrawText_("インベントリ", 205, 110);
 
-    m_sprPanelTop->DrawImage(750, 100);
     m_font->DrawText_("倉庫", 855, 110);
 
     m_font->DrawText_("左右で切り替え、上下でアイテムを選択", 1085, 85);
     m_font->DrawText_("決定ボタンでアイテムを反対側に移動", 1085, 135);
-
-    // 左の列の背景
-    if ((int)m_leftList.size() >= PANEL_ROW_MAX)
-    {
-        for (int i = 0; i < PANEL_ROW_MAX; ++i) {
-            m_sprPanel->DrawImage(LEFT_PANEL_STARTX, LEFT_PANEL_STARTY + (PANEL_HEIGHT * (int)i));
-        }
-    }
-    else
-    {
-        for (std::size_t i = 0; i < m_leftList.size(); ++i) {
-            m_sprPanel->DrawImage(LEFT_PANEL_STARTX, LEFT_PANEL_STARTY + (PANEL_HEIGHT * (int)i));
-        }
-    }
-
-    // 右の列の背景
-    if ((int)m_rightList.size() >= PANEL_ROW_MAX)
-    {
-        for (int i = 0; i < PANEL_ROW_MAX; ++i) {
-            m_sprPanel->DrawImage(RIGHT_PANEL_STARTX, RIGHT_PANEL_STARTY + (PANEL_HEIGHT * (int)i));
-        }
-    }
-    else
-    {
-        for (std::size_t i = 0; i < m_rightList.size(); ++i) {
-            m_sprPanel->DrawImage(RIGHT_PANEL_STARTX, RIGHT_PANEL_STARTY + (PANEL_HEIGHT * (int)i));
-        }
-    }
 
     // 左の列のインベントリを表示
     if ((int)m_leftList.size() >= PANEL_ROW_MAX)
@@ -690,14 +656,14 @@ void StorehouseLib::Draw()
     {
         if (!m_leftList.empty())
         {
-            m_sprCursor->DrawImage(80, 205 + (m_leftCursor * 60));
+            m_sprCursor->DrawImage(80, 220 + (m_leftCursor * 60));
         }
     }
     else if (m_eFocus == eFocus::RIGHT)
     {
         if (!m_rightList.empty())
         {
-            m_sprCursor->DrawImage(680, 205 + (m_rightCursor * 60));
+            m_sprCursor->DrawImage(680, 220 + (m_rightCursor * 60));
         }
     }
 

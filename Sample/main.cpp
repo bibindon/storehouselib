@@ -285,18 +285,12 @@ HRESULT InitD3D(HWND hWnd)
     Sprite* sprBackground = new Sprite(g_pd3dDevice);
     sprBackground->Load("background.png");
 
-    Sprite* sprPanelLeft = new Sprite(g_pd3dDevice);
-    sprPanelLeft->Load("panelLeft.png");
-
-    Sprite* sprPanelTop = new Sprite(g_pd3dDevice);
-    sprPanelTop->Load("craftPanel.png");
-
     IFont* pFont = new Font(g_pd3dDevice);
     pFont->Init();
 
     ISoundEffect* pSE = new SoundEffect();
 
-    menu.Init(pFont, pSE, sprCursor, sprBackground, sprPanelLeft, sprPanelTop);
+    menu.Init(pFont, pSE, sprCursor, sprBackground);
     {
         std::vector<StoreItem> vs;
 

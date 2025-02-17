@@ -60,9 +60,7 @@ public:
     void Init(IFont* font,
               ISoundEffect* SE,
               ISprite* sprCursor,
-              ISprite* sprBackground,
-              ISprite* sprPanel,
-              ISprite* sprPanelTop);
+              ISprite* sprBackground);
 
     void SetInventoryList(const std::vector<StoreItem>& arg);
     void SetStorehouseList(const std::vector<StoreItem>& arg);
@@ -92,8 +90,6 @@ private:
 
     ISprite* m_sprCursor = nullptr;
     ISprite* m_sprBackground = nullptr;
-    ISprite* m_sprPanel = nullptr;
-    ISprite* m_sprPanelTop = nullptr;
     IFont* m_font = nullptr;
     ISoundEffect* m_SE = nullptr;
     eFocus m_eFocus = eFocus::LEFT;
