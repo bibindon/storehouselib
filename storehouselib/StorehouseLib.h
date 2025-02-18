@@ -62,8 +62,8 @@ private:
     int m_idSub = 0;
     std::string m_name;
 
-    int m_level = 0;
-    int m_durability = 0;
+    int m_level = -1;
+    int m_durability = -1;
 };
 
 class StorehouseLib

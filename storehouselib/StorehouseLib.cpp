@@ -627,13 +627,19 @@ void StorehouseLib::Draw()
                               LEFT_PANEL_STARTX,
                               LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
 
-            m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
-                              LEFT_PANEL_STARTX + 400,
-                              LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+            if (m_leftList.at(i).GetLevel() != -1)
+            {
+				m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
+								  LEFT_PANEL_STARTX + 400,
+								  LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+            }
 
-            m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
-                              LEFT_PANEL_STARTX + 500,
-                              LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+            if (m_leftList.at(i).GetDurability() != -1)
+            {
+				m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
+								  LEFT_PANEL_STARTX + 500,
+								  LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+            }
         }
     }
     else
@@ -644,13 +650,19 @@ void StorehouseLib::Draw()
                               LEFT_PANEL_STARTX,
                               LEFT_PANEL_STARTY + ((int)i * PANEL_HEIGHT));
 
-            m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
-                              LEFT_PANEL_STARTX + 400,
-                              LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+            if (m_leftList.at(i).GetLevel() != -1)
+            {
+                m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
+                                  LEFT_PANEL_STARTX + 400,
+                                  LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+            }
 
-            m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
-                              LEFT_PANEL_STARTX + 500,
-                              LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+            if (m_leftList.at(i).GetDurability() != -1)
+            {
+                m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
+                                  LEFT_PANEL_STARTX + 500,
+                                  LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+            }
         }
     }
 
@@ -670,13 +682,19 @@ void StorehouseLib::Draw()
                               RIGHT_PANEL_STARTX,
                               RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
 
-            m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
-                              RIGHT_PANEL_STARTX + 400,
-                              RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+            if (m_rightList.at(i).GetLevel() != -1)
+            {
+				m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
+								  RIGHT_PANEL_STARTX + 400,
+								  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+            }
 
-            m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
-                              RIGHT_PANEL_STARTX + 500,
-                              RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+            if (m_rightList.at(i).GetDurability() != -1)
+            {
+                m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
+                                  RIGHT_PANEL_STARTX + 500,
+                                  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+            }
         }
     }
     else
@@ -687,13 +705,19 @@ void StorehouseLib::Draw()
                               RIGHT_PANEL_STARTX,
                               RIGHT_PANEL_STARTY + ((int)i * PANEL_HEIGHT));
 
-            m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
-                              RIGHT_PANEL_STARTX + 400,
-                              RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+            if (m_rightList.at(i).GetLevel() != -1)
+            {
+				m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
+								  RIGHT_PANEL_STARTX + 400,
+								  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+            }
 
-            m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
-                              RIGHT_PANEL_STARTX + 500,
-                              RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+            if (m_rightList.at(i).GetDurability() != -1)
+            {
+				m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
+								  RIGHT_PANEL_STARTX + 500,
+								  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+            }
         }
     }
 
