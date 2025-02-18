@@ -130,11 +130,11 @@ public:
             &m_pFont);
     }
 
-    virtual void DrawText_(const std::string& msg, const int x, const int y)
+    virtual void DrawText_(const std::string& msg, const int x, const int y, const int transparency)
     {
         RECT rect = { x, y, 0, 0 };
         m_pFont->DrawText(NULL, msg.c_str(), -1, &rect, DT_LEFT | DT_NOCLIP,
-            D3DCOLOR_ARGB(255, 255, 255, 255));
+            D3DCOLOR_ARGB(transparency, 255, 255, 255));
     }
 
     ~Font()

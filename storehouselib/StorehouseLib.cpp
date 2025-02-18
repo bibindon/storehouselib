@@ -604,21 +604,36 @@ void StorehouseLib::Draw()
     m_sprBackground->DrawImage(0, 0);
 
     // 上部分の左に「インベントリ」、右側に「倉庫」と表示する
-    m_font->DrawText_("インベントリ", 205, 110);
+    m_font->DrawText_("インベントリ", 205, 50, 200);
 
-    m_font->DrawText_("倉庫", 855, 110);
+    m_font->DrawText_("倉庫", 855, 50, 200);
 
-    m_font->DrawText_("左右で切り替え、上下でアイテムを選択", 1085, 85);
-    m_font->DrawText_("決定ボタンでアイテムを反対側に移動", 1085, 135);
+    m_font->DrawText_("左右で切り替え、上下でアイテムを選択", 1085, 30, 100);
+    m_font->DrawText_("決定ボタンでアイテムを反対側に移動", 1085, 80, 100);
 
+    //--------------------------------------------------------
     // 左の列のインベントリを表示
+    //--------------------------------------------------------
+
+    m_font->DrawText_("アイテム名", 200, 135, 120);
+    m_font->DrawText_("強化", 200 + 350, 135, 120);
+    m_font->DrawText_("耐久", 200 + 450, 135, 120);
+
     if ((int)m_leftList.size() >= PANEL_ROW_MAX)
     {
         for (int i = m_leftBegin; i < m_leftBegin + PANEL_ROW_MAX; ++i)
         {
             m_font->DrawText_(m_leftList.at(i).GetName(),
-                              LEFT_PANEL_STARTX + PANEL_PADDINGX,
-                              LEFT_PANEL_STARTY + PANEL_PADDINGY + ((i - m_leftBegin) * PANEL_HEIGHT));
+                              LEFT_PANEL_STARTX,
+                              LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+
+            m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
+                              LEFT_PANEL_STARTX + 400,
+                              LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+
+            m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
+                              LEFT_PANEL_STARTX + 500,
+                              LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
         }
     }
     else
@@ -626,19 +641,42 @@ void StorehouseLib::Draw()
         for (std::size_t i = 0; i < m_leftList.size(); ++i)
         {
             m_font->DrawText_(m_leftList.at(i).GetName(),
-                              LEFT_PANEL_STARTX + PANEL_PADDINGX,
-                              LEFT_PANEL_STARTY + PANEL_PADDINGY + ((int)i * PANEL_HEIGHT));
+                              LEFT_PANEL_STARTX,
+                              LEFT_PANEL_STARTY + ((int)i * PANEL_HEIGHT));
+
+            m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
+                              LEFT_PANEL_STARTX + 400,
+                              LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+
+            m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
+                              LEFT_PANEL_STARTX + 500,
+                              LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
         }
     }
 
+    //--------------------------------------------------------
     // 右の列の倉庫を表示
+    //--------------------------------------------------------
+
+    m_font->DrawText_("アイテム名", 850, 135, 120);
+    m_font->DrawText_("強化", 850 + 350, 135, 120);
+    m_font->DrawText_("耐久", 850 + 450, 135, 120);
+
     if ((int)m_rightList.size() >= PANEL_ROW_MAX)
     {
         for (int i = m_rightBegin; i < m_rightBegin + PANEL_ROW_MAX; ++i)
         {
             m_font->DrawText_(m_rightList.at(i).GetName(),
-                              RIGHT_PANEL_STARTX + PANEL_PADDINGX,
-                              RIGHT_PANEL_STARTY + PANEL_PADDINGY + ((i - m_rightBegin) * PANEL_HEIGHT));
+                              RIGHT_PANEL_STARTX,
+                              RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+
+            m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
+                              RIGHT_PANEL_STARTX + 400,
+                              RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+
+            m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
+                              RIGHT_PANEL_STARTX + 500,
+                              RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
         }
     }
     else
@@ -646,8 +684,16 @@ void StorehouseLib::Draw()
         for (std::size_t i = 0; i < m_rightList.size(); ++i)
         {
             m_font->DrawText_(m_rightList.at(i).GetName(),
-                              RIGHT_PANEL_STARTX + PANEL_PADDINGX,
-                              RIGHT_PANEL_STARTY + PANEL_PADDINGY + ((int)i * PANEL_HEIGHT));
+                              RIGHT_PANEL_STARTX,
+                              RIGHT_PANEL_STARTY + ((int)i * PANEL_HEIGHT));
+
+            m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
+                              RIGHT_PANEL_STARTX + 400,
+                              RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+
+            m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
+                              RIGHT_PANEL_STARTX + 500,
+                              RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
         }
     }
 
@@ -656,14 +702,14 @@ void StorehouseLib::Draw()
     {
         if (!m_leftList.empty())
         {
-            m_sprCursor->DrawImage(80, 220 + (m_leftCursor * 60));
+            m_sprCursor->DrawImage(110, 206 + (m_leftCursor * 60));
         }
     }
     else if (m_eFocus == eFocus::RIGHT)
     {
         if (!m_rightList.empty())
         {
-            m_sprCursor->DrawImage(680, 220 + (m_rightCursor * 60));
+            m_sprCursor->DrawImage(760, 206 + (m_rightCursor * 60));
         }
     }
 
@@ -698,4 +744,24 @@ void NSStorehouseLib::StoreItem::SetName(const std::string& arg)
 std::string NSStorehouseLib::StoreItem::GetName() const
 {
     return m_name;
+}
+
+void NSStorehouseLib::StoreItem::SetLevel(const int arg)
+{
+    m_level = arg;
+}
+
+int NSStorehouseLib::StoreItem::GetLevel() const
+{
+    return m_level;
+}
+
+void NSStorehouseLib::StoreItem::SetDurability(const int arg)
+{
+    m_durability = arg;
+}
+
+int NSStorehouseLib::StoreItem::GetDurability() const
+{
+    return m_durability;
 }

@@ -19,7 +19,11 @@ public:
 class IFont
 {
 public:
-    virtual void DrawText_(const std::string& msg, const int x, const int y) = 0;
+    virtual void DrawText_(const std::string& msg,
+                           const int x,
+                           const int y,
+                           const int transparency = 255) = 0;
+
     virtual void Init() = 0;
     virtual ~IFont() {};
 };
@@ -46,11 +50,20 @@ public:
     void SetName(const std::string& arg);
     std::string GetName() const;
 
+    void SetLevel(const int arg);
+    int GetLevel() const;
+
+    void SetDurability(const int arg);
+    int GetDurability() const;
+
 private:
 
     int m_id = 0;
     int m_idSub = 0;
     std::string m_name;
+
+    int m_level = 0;
+    int m_durability = 0;
 };
 
 class StorehouseLib
@@ -97,16 +110,13 @@ private:
     std::vector<StoreItem> m_leftList;
     std::vector<StoreItem> m_rightList;
 
-    const int PANEL_PADDINGX = 50;
-    const int PANEL_PADDINGY = 13;
-
     const int PANEL_WIDTH = 432;
     const int PANEL_HEIGHT = 60;
 
-    const int LEFT_PANEL_STARTX = 100;
+    const int LEFT_PANEL_STARTX = 150;
     const int LEFT_PANEL_STARTY = 200;
 
-    const int RIGHT_PANEL_STARTX = 700;
+    const int RIGHT_PANEL_STARTX = 800;
     const int RIGHT_PANEL_STARTY = 200;
 
     const int PANEL_ROW_MAX = 10;
