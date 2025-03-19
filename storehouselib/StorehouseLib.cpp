@@ -72,12 +72,12 @@ void NSStorehouseLib::StorehouseLib::MoveFromInventoryToStorehouse(const int id,
                   {
                       if (left.GetSubId() < right.GetSubId())
                       {
-						  return true;
+                          return true;
                       }
                       //  left.GetSubId() >= right.GetSubId()
                       else
                       {
-						  return false;
+                          return false;
                       }
                   }
               });
@@ -191,19 +191,19 @@ std::string StorehouseLib::Down()
         {
             m_leftSelect++;
             m_SE->PlayMove();
-        }
 
-        // カーソルが一番下にあるときに下ボタンを押されたら
-        // カーソルはそのままでリストが上に移動する
-        if (m_leftCursor != PANEL_ROW_MAX - 1)
-        {
-            m_leftCursor++;
-        }
-        else if (m_leftCursor == PANEL_ROW_MAX - 1)
-        {
-            if (work <= (int)m_leftList.size() - 2)
+            // カーソルが一番下にあるときに下ボタンを押されたら
+            // カーソルはそのままでリストが上に移動する
+            if (m_leftCursor != PANEL_ROW_MAX - 1)
             {
-                m_leftBegin++;
+                m_leftCursor++;
+            }
+            else if (m_leftCursor == PANEL_ROW_MAX - 1)
+            {
+                if (work <= (int)m_leftList.size() - 2)
+                {
+                    m_leftBegin++;
+                }
             }
         }
     }
@@ -215,19 +215,19 @@ std::string StorehouseLib::Down()
         {
             m_rightSelect++;
             m_SE->PlayMove();
-        }
 
-        // カーソルが一番下にあるときに下ボタンを押されたら
-        // カーソルはそのままでリストが上に移動する
-        if (m_rightCursor != PANEL_ROW_MAX - 1)
-        {
-            m_rightCursor++;
-        }
-        else if (m_rightCursor == PANEL_ROW_MAX - 1)
-        {
-            if (work <= (int)m_rightList.size() - 2)
+            // カーソルが一番下にあるときに下ボタンを押されたら
+            // カーソルはそのままでリストが上に移動する
+            if (m_rightCursor != PANEL_ROW_MAX - 1)
             {
-                m_rightBegin++;
+                m_rightCursor++;
+            }
+            else if (m_rightCursor == PANEL_ROW_MAX - 1)
+            {
+                if (work <= (int)m_rightList.size() - 2)
+                {
+                    m_rightBegin++;
+                }
             }
         }
     }
@@ -242,6 +242,16 @@ std::string StorehouseLib::Right()
         {
             m_eFocus = eFocus::RIGHT;
             m_SE->PlayMove();
+
+            if (m_rightCursor == -1)
+            {
+                m_rightCursor = 0;
+            }
+
+            if (m_rightSelect == -1)
+            {
+                m_rightSelect = 0;
+            }
         }
     }
     return std::string();
@@ -255,6 +265,16 @@ std::string StorehouseLib::Left()
         {
             m_eFocus = eFocus::LEFT;
             m_SE->PlayMove();
+
+            if (m_leftCursor == -1)
+            {
+                m_leftCursor = 0;
+            }
+
+            if (m_leftSelect == -1)
+            {
+                m_leftSelect = 0;
+            }
         }
     }
     return std::string();
@@ -277,6 +297,34 @@ std::string StorehouseLib::Into()
             {
                 m_eFocus = eFocus::RIGHT;
             }
+
+            //--------------------------------------------------------
+            // 最後の要素をクリックしたら、カーソルを１つ上に移動させる。
+            // ただし、カーソルが一番下にあった場合はリストを１つ下に下げる
+            // カーソルを一つ上に移動させる
+            //--------------------------------------------------------
+
+            if (m_leftSelect == m_leftList.size() - 1)
+            {
+                if (m_leftCursor != PANEL_ROW_MAX - 1)
+                {
+                    m_leftCursor--;
+                    m_leftSelect--;
+                }
+                else
+                {
+                    if (m_leftBegin >= 1)
+                    {
+                        m_leftBegin--;
+                        m_leftSelect--;
+                    }
+                    else if (m_leftBegin == 0)
+                    {
+                        m_leftCursor--;
+                        m_leftSelect--;
+                    }
+                }
+            }
         }
     }
     else if (m_eFocus == eFocus::RIGHT)
@@ -292,6 +340,34 @@ std::string StorehouseLib::Into()
             if (m_rightList.size() == 1)
             {
                 m_eFocus = eFocus::LEFT;
+            }
+
+            //--------------------------------------------------------
+            // 最後の要素をクリックしたら、カーソルを１つ上に移動させる。
+            // ただし、カーソルが一番下にあった場合はリストを１つ下に下げる
+            // カーソルを一つ上に移動させる
+            //--------------------------------------------------------
+
+            if (m_rightSelect == m_rightList.size() - 1)
+            {
+                if (m_rightCursor != PANEL_ROW_MAX - 1)
+                {
+                    m_rightCursor--;
+                    m_rightSelect--;
+                }
+                else
+                {
+                    if (m_rightBegin >= 1)
+                    {
+                        m_rightBegin--;
+                        m_rightSelect--;
+                    }
+                    else if (m_rightBegin == 0)
+                    {
+                        m_rightCursor--;
+                        m_rightSelect--;
+                    }
+                }
             }
         }
     }
@@ -629,16 +705,16 @@ void StorehouseLib::Draw()
 
             if (m_leftList.at(i).GetLevel() != -1)
             {
-				m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
-								  LEFT_PANEL_STARTX + 400,
-								  LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+                m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
+                                  LEFT_PANEL_STARTX + 400,
+                                  LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
             }
 
             if (m_leftList.at(i).GetDurability() != -1)
             {
-				m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
-								  LEFT_PANEL_STARTX + 500,
-								  LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+                m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
+                                  LEFT_PANEL_STARTX + 500,
+                                  LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
             }
         }
     }
@@ -684,9 +760,9 @@ void StorehouseLib::Draw()
 
             if (m_rightList.at(i).GetLevel() != -1)
             {
-				m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
-								  RIGHT_PANEL_STARTX + 400,
-								  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+                m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
+                                  RIGHT_PANEL_STARTX + 400,
+                                  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
             }
 
             if (m_rightList.at(i).GetDurability() != -1)
@@ -707,16 +783,16 @@ void StorehouseLib::Draw()
 
             if (m_rightList.at(i).GetLevel() != -1)
             {
-				m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
-								  RIGHT_PANEL_STARTX + 400,
-								  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+                m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
+                                  RIGHT_PANEL_STARTX + 400,
+                                  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
             }
 
             if (m_rightList.at(i).GetDurability() != -1)
             {
-				m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
-								  RIGHT_PANEL_STARTX + 500,
-								  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+                m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
+                                  RIGHT_PANEL_STARTX + 500,
+                                  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
             }
         }
     }
