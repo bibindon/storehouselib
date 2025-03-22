@@ -297,31 +297,33 @@ std::string StorehouseLib::Into()
             {
                 m_eFocus = eFocus::RIGHT;
             }
-
-            //--------------------------------------------------------
-            // 最後の要素をクリックしたら、カーソルを１つ上に移動させる。
-            // ただし、カーソルが一番下にあった場合はリストを１つ下に下げる
-            // カーソルを一つ上に移動させる
-            //--------------------------------------------------------
-
-            if (m_leftSelect == m_leftList.size() - 1)
+            else
             {
-                if (m_leftCursor != PANEL_ROW_MAX - 1)
+                //--------------------------------------------------------
+                // 最後の要素をクリックしたら、カーソルを１つ上に移動させる。
+                // ただし、カーソルが一番下にあった場合はリストを１つ下に下げる
+                // カーソルを一つ上に移動させる
+                //--------------------------------------------------------
+
+                if (m_leftSelect == m_leftList.size() - 1)
                 {
-                    m_leftCursor--;
-                    m_leftSelect--;
-                }
-                else
-                {
-                    if (m_leftBegin >= 1)
-                    {
-                        m_leftBegin--;
-                        m_leftSelect--;
-                    }
-                    else if (m_leftBegin == 0)
+                    if (m_leftCursor != PANEL_ROW_MAX - 1)
                     {
                         m_leftCursor--;
                         m_leftSelect--;
+                    }
+                    else
+                    {
+                        if (m_leftBegin >= 1)
+                        {
+                            m_leftBegin--;
+                            m_leftSelect--;
+                        }
+                        else if (m_leftBegin == 0)
+                        {
+                            m_leftCursor--;
+                            m_leftSelect--;
+                        }
                     }
                 }
             }
@@ -341,31 +343,33 @@ std::string StorehouseLib::Into()
             {
                 m_eFocus = eFocus::LEFT;
             }
-
-            //--------------------------------------------------------
-            // 最後の要素をクリックしたら、カーソルを１つ上に移動させる。
-            // ただし、カーソルが一番下にあった場合はリストを１つ下に下げる
-            // カーソルを一つ上に移動させる
-            //--------------------------------------------------------
-
-            if (m_rightSelect == m_rightList.size() - 1)
+            else
             {
-                if (m_rightCursor != PANEL_ROW_MAX - 1)
+                //--------------------------------------------------------
+                // 最後の要素をクリックしたら、カーソルを１つ上に移動させる。
+                // ただし、カーソルが一番下にあった場合はリストを１つ下に下げる
+                // カーソルを一つ上に移動させる
+                //--------------------------------------------------------
+
+                if (m_rightSelect == m_rightList.size() - 1)
                 {
-                    m_rightCursor--;
-                    m_rightSelect--;
-                }
-                else
-                {
-                    if (m_rightBegin >= 1)
-                    {
-                        m_rightBegin--;
-                        m_rightSelect--;
-                    }
-                    else if (m_rightBegin == 0)
+                    if (m_rightCursor != PANEL_ROW_MAX - 1)
                     {
                         m_rightCursor--;
                         m_rightSelect--;
+                    }
+                    else
+                    {
+                        if (m_rightBegin >= 1)
+                        {
+                            m_rightBegin--;
+                            m_rightSelect--;
+                        }
+                        else if (m_rightBegin == 0)
+                        {
+                            m_rightCursor--;
+                            m_rightSelect--;
+                        }
                     }
                 }
             }
@@ -397,6 +401,7 @@ std::string NSStorehouseLib::StorehouseLib::Previous()
 void StorehouseLib::CursorOn(const int x, const int y)
 {
     int previousCursor = m_leftCursor;
+    int previousSelect = m_leftSelect;
     if (LEFT_PANEL_STARTX < x && x <= LEFT_PANEL_STARTX + PANEL_WIDTH)
     {
         if (LEFT_PANEL_STARTY < y && y <= LEFT_PANEL_STARTY + PANEL_HEIGHT * 1)
@@ -460,12 +465,23 @@ void StorehouseLib::CursorOn(const int x, const int y)
             m_leftSelect = 9 + m_leftBegin;
         }
     }
+
     if (previousCursor != m_leftCursor)
     {
-        m_SE->PlayMove();
+        if (m_leftSelect >= m_leftList.size())
+        {
+            m_leftCursor = previousCursor;
+            m_leftSelect = previousSelect;
+        }
+        else
+        {
+            m_SE->PlayMove();
+        }
     }
 
     int previousRightCursor = m_rightCursor;
+    int previousRightSelect = m_rightSelect;
+
     if (RIGHT_PANEL_STARTX < x && x <= RIGHT_PANEL_STARTX + PANEL_WIDTH)
     {
         if (RIGHT_PANEL_STARTY < y && y <= RIGHT_PANEL_STARTY + PANEL_HEIGHT * 1)
@@ -529,9 +545,18 @@ void StorehouseLib::CursorOn(const int x, const int y)
             m_rightSelect = 9 + m_rightBegin;
         }
     }
+
     if (previousRightCursor != m_rightCursor)
     {
-        m_SE->PlayMove();
+        if (m_rightSelect >= m_rightList.size())
+        {
+            m_rightCursor = previousRightCursor;
+            m_rightSelect = previousRightSelect;
+        }
+        else
+        {
+            m_SE->PlayMove();
+        }
     }
 }
 
