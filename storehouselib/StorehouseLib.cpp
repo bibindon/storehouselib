@@ -468,7 +468,7 @@ void StorehouseLib::CursorOn(const int x, const int y)
 
     if (previousCursor != m_leftCursor)
     {
-        if (m_leftSelect >= m_leftList.size())
+        if (m_leftSelect >= (int)m_leftList.size())
         {
             m_leftCursor = previousCursor;
             m_leftSelect = previousSelect;
@@ -548,7 +548,7 @@ void StorehouseLib::CursorOn(const int x, const int y)
 
     if (previousRightCursor != m_rightCursor)
     {
-        if (m_rightSelect >= m_rightList.size())
+        if (m_rightSelect >= (int)m_rightList.size())
         {
             m_rightCursor = previousRightCursor;
             m_rightSelect = previousRightSelect;
@@ -755,14 +755,14 @@ void StorehouseLib::Draw()
             {
                 m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
                                   LEFT_PANEL_STARTX + 400,
-                                  LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+                                  LEFT_PANEL_STARTY + (((int)i - m_leftBegin) * PANEL_HEIGHT));
             }
 
             if (m_leftList.at(i).GetDurability() != -1)
             {
                 m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
                                   LEFT_PANEL_STARTX + 500,
-                                  LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
+                                  LEFT_PANEL_STARTY + (((int)i - m_leftBegin) * PANEL_HEIGHT));
             }
         }
     }
@@ -810,14 +810,14 @@ void StorehouseLib::Draw()
             {
                 m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
                                   RIGHT_PANEL_STARTX + 400,
-                                  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+                                  RIGHT_PANEL_STARTY + (((int)i - m_rightBegin) * PANEL_HEIGHT));
             }
 
             if (m_rightList.at(i).GetDurability() != -1)
             {
                 m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
                                   RIGHT_PANEL_STARTX + 500,
-                                  RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
+                                  RIGHT_PANEL_STARTY + (((int)i - m_rightBegin) * PANEL_HEIGHT));
             }
         }
     }
