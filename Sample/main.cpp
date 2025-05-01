@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <cassert>
 
 std::vector<std::string> split(const std::string& s, char delim)
 {
@@ -113,21 +114,41 @@ public:
     {
     }
 
-    void Init()
+    void Init(bool bEnglish)
     {
-        HRESULT hr = D3DXCreateFont(
-            m_pD3DDevice,
-            24,
-            0,
-            FW_NORMAL,
-            1,
-            false,
-            SHIFTJIS_CHARSET,
-            OUT_TT_ONLY_PRECIS,
-            ANTIALIASED_QUALITY,
-            FF_DONTCARE,
-            "‚l‚r –¾’©",
-            &m_pFont);
+        HRESULT hr = E_FAIL;
+        if (!bEnglish)
+        {
+            hr = D3DXCreateFont(m_pD3DDevice,
+                                24,
+                                0,
+                                FW_NORMAL,
+                                1,
+                                false,
+                                SHIFTJIS_CHARSET,
+                                OUT_TT_ONLY_PRECIS,
+                                ANTIALIASED_QUALITY,
+                                FF_DONTCARE,
+                                "‚l‚r –¾’©",
+                                &m_pFont);
+        }
+        else
+        {
+            hr = D3DXCreateFont(m_pD3DDevice,
+                                24,
+                                0,
+                                FW_NORMAL,
+                                1,
+                                false,
+                                ANSI_CHARSET,
+                                OUT_TT_ONLY_PRECIS,
+                                ANTIALIASED_QUALITY,
+                                FF_DONTCARE,
+                                "Times New Roman",
+                                &m_pFont);
+        }
+
+        assert(hr == S_OK);
     }
 
     virtual void DrawText_(const std::string& msg, const int x, const int y, const int transparency)
@@ -286,11 +307,11 @@ HRESULT InitD3D(HWND hWnd)
     sprBackground->Load("background.png");
 
     IFont* pFont = new Font(g_pd3dDevice);
-    pFont->Init();
+    pFont->Init(true);
 
     ISoundEffect* pSE = new SoundEffect();
 
-    menu.Init(pFont, pSE, sprCursor, sprBackground);
+    menu.Init(pFont, pSE, sprCursor, sprBackground, true);
     {
         std::vector<StoreItem> vs;
 

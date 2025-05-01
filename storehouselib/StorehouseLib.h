@@ -24,7 +24,7 @@ public:
                            const int y,
                            const int transparency = 255) = 0;
 
-    virtual void Init() = 0;
+    virtual void Init(bool bEnglish) = 0;
     virtual ~IFont() {};
 };
 
@@ -73,7 +73,8 @@ public:
     void Init(IFont* font,
               ISoundEffect* SE,
               ISprite* sprCursor,
-              ISprite* sprBackground);
+              ISprite* sprBackground,
+              bool bEnglish);
 
     void SetInventoryList(const std::vector<StoreItem>& arg);
     void SetStorehouseList(const std::vector<StoreItem>& arg);
@@ -142,6 +143,8 @@ private:
     // 何番目のアイテムが一番上に表示されているか
     // スクロール可能なので一番上に表示されるアイテムはスクロールすると変わる。
     int m_rightBegin = 0;
+
+    bool m_bEnglish = false;
 };
 }
 
