@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <vector>
 #include <unordered_map>
 
-// �A�C�e�������E��2��ŕ\������
-// �����C���x���g���A�E���q��
-// �N���b�N������E�����Ɉړ�����B�m�F�͍s��Ȃ��B
+// アイテムを左右の2列で表示する
+// 左がインベントリ、右が倉庫
+// クリックしたら右か左に移動する。確認は行わない。
 namespace NSStorehouseLib
 {
 class ISprite
@@ -122,26 +122,26 @@ private:
 
     const int PANEL_ROW_MAX = 10;
 
-    // �X�N���[���\�ł��邱�Ƃ��l������
-    // �ォ���ʏ�ŉ��ԖڂɃJ�[�\�������邩�B
+    // スクロール可能であることを考慮する
+    // 上から画面上で何番目にカーソルがあるか。
     int m_leftCursor = 0;
 
-    // �J�[�\�����I�����Ă���v�f��m_outputList�̉��Ԗڂ̗v�f���B
+    // カーソルが選択している要素がm_outputListの何番目の要素か。
     int m_leftSelect = 0;
 
-    // ���Ԗڂ̃A�C�e������ԏ�ɕ\������Ă��邩
-    // �X�N���[���\�Ȃ̂ň�ԏ�ɕ\�������A�C�e���̓X�N���[������ƕς��B
+    // 何番目のアイテムが一番上に表示されているか
+    // スクロール可能なので一番上に表示されるアイテムはスクロールすると変わる。
     int m_leftBegin = 0;
 
-    // �X�N���[���\�ł��邱�Ƃ��l������
-    // �ォ���ʏ�ŉ��ԖڂɃJ�[�\�������邩�B
+    // スクロール可能であることを考慮する
+    // 上から画面上で何番目にカーソルがあるか。
     int m_rightCursor = 0;
 
-    // �J�[�\�����I�����Ă���v�f��m_outputList�̉��Ԗڂ̗v�f���B
+    // カーソルが選択している要素がm_outputListの何番目の要素か。
     int m_rightSelect = 0;
 
-    // ���Ԗڂ̃A�C�e������ԏ�ɕ\������Ă��邩
-    // �X�N���[���\�Ȃ̂ň�ԏ�ɕ\�������A�C�e���̓X�N���[������ƕς��B
+    // 何番目のアイテムが一番上に表示されているか
+    // スクロール可能なので一番上に表示されるアイテムはスクロールすると変わる。
     int m_rightBegin = 0;
 
     bool m_bEnglish = false;

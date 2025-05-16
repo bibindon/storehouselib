@@ -1,4 +1,4 @@
-#pragma comment( lib, "d3d9.lib" )
+﻿#pragma comment( lib, "d3d9.lib" )
 #if defined(NDEBUG)
 #pragma comment( lib, "d3dx9.lib" )
 #else
@@ -129,7 +129,7 @@ public:
                                 OUT_TT_ONLY_PRECIS,
                                 ANTIALIASED_QUALITY,
                                 FF_DONTCARE,
-                                "�l�r ����",
+                                "ＭＳ 明朝",
                                 &m_pFont);
         }
         else
@@ -251,7 +251,7 @@ HRESULT InitD3D(HWND hWnd)
         OUT_TT_ONLY_PRECIS,
         ANTIALIASED_QUALITY,
         FF_DONTCARE,
-        "�l�r �S�V�b�N",
+        "ＭＳ ゴシック",
         &g_pFont);
     if FAILED(hr)
     {
@@ -264,7 +264,7 @@ HRESULT InitD3D(HWND hWnd)
         g_pd3dDevice, NULL, &pD3DXMtrlBuffer, NULL,
         &dwNumMaterials, &pMesh)))
     {
-        MessageBox(NULL, "X�t�@�C���̓ǂݍ��݂Ɏ��s���܂���", NULL, MB_OK);
+        MessageBox(NULL, "Xファイルの読み込みに失敗しました", NULL, MB_OK);
         return E_FAIL;
     }
     d3dxMaterials = (D3DXMATERIAL*)pD3DXMtrlBuffer->GetBufferPointer();
@@ -283,7 +283,7 @@ HRESULT InitD3D(HWND hWnd)
                 d3dxMaterials[i].pTextureFilename,
                 &pTextures[i])))
             {
-                MessageBox(NULL, "�e�N�X�`���̓ǂݍ��݂Ɏ��s���܂���", NULL, MB_OK);
+                MessageBox(NULL, "テクスチャの読み込みに失敗しました", NULL, MB_OK);
             }
         }
     }
@@ -321,7 +321,7 @@ HRESULT InitD3D(HWND hWnd)
             storeItem.SetId(i);
             storeItem.SetSubId(1);
             std::string work;
-            work = "�A�C�e���`�`�`" + std::to_string(i);
+            work = "アイテムＡＡＡ" + std::to_string(i);
             storeItem.SetName(work);
             vs.push_back(storeItem);
         }
@@ -334,7 +334,7 @@ HRESULT InitD3D(HWND hWnd)
             storeItem.SetId(i+30);
             storeItem.SetSubId(1);
             std::string work;
-            work = "�A�C�e���a�a�a" + std::to_string(i);
+            work = "アイテムＢＢＢ" + std::to_string(i);
             storeItem.SetName(work);
             vs.push_back(storeItem);
         }
@@ -377,7 +377,7 @@ VOID Render()
     if (SUCCEEDED(g_pd3dDevice->BeginScene()))
     {
         char msg[128];
-        strcpy_s(msg, 128, "C�L�[�ŃN���t�g��ʂ�\��");
+        strcpy_s(msg, 128, "Cキーでクラフト画面を表示");
         TextDraw(g_pFont, msg, 0, 0);
 
         pEffect->SetTechnique("BasicTec");
@@ -424,7 +424,7 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 bShowMenu = true;
             }
             break;
-        // ���j���[��\�����Ă���Œ��Ƀ��j���[�ɕ\������Ă�����e��ς���
+        // メニューを表示している最中にメニューに表示されている内容を変える
         case VK_F2:
         {
             // menu.SetItem(itemInfoList);
