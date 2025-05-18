@@ -1,13 +1,13 @@
-﻿#pragma comment( lib, "d3d9.lib" )
+﻿#pragma comment( lib, "d3d9.lib")
 #if defined(NDEBUG)
-#pragma comment( lib, "d3dx9.lib" )
+#pragma comment( lib, "d3dx9.lib")
 #else
-#pragma comment( lib, "d3dx9d.lib" )
+#pragma comment( lib, "d3dx9d.lib")
 #endif
 
 #pragma comment (lib, "winmm.lib")
 
-#pragma comment( lib, "storehouselib.lib" )
+#pragma comment( lib, "storehouselib.lib")
 
 #include "..\storehouselib\StorehouseLib.h"
 
@@ -17,12 +17,13 @@
 #include <vector>
 #include <sstream>
 #include <cassert>
+#include <tchar.h>
 
-std::vector<std::string> split(const std::string& s, char delim)
+std::vector<std::wstring> split(const std::wstring& s, wchar_t delim)
 {
-    std::vector<std::string> result;
-    std::stringstream ss(s);
-    std::string item;
+    std::vector<std::wstring> result;
+    std::wstringstream ss(s);
+    std::wstring item;
 
     while (getline(ss, item, delim))
     {
@@ -65,7 +66,7 @@ public:
 
     }
 
-    void Load(const std::string& filepath) override
+    void Load(const std::wstring& filepath) override
     {
         LPD3DXSPRITE tempSprite { nullptr };
         if (FAILED(D3DXCreateSprite(m_pD3DDevice, &m_D3DSprite)))
@@ -129,7 +130,7 @@ public:
                                 OUT_TT_ONLY_PRECIS,
                                 ANTIALIASED_QUALITY,
                                 FF_DONTCARE,
-                                "ＭＳ 明朝",
+                                _T("ＭＳ 明朝"),
                                 &m_pFont);
         }
         else
@@ -144,14 +145,14 @@ public:
                                 OUT_TT_ONLY_PRECIS,
                                 ANTIALIASED_QUALITY,
                                 FF_DONTCARE,
-                                "Times New Roman",
+                                _T("Times New Roman"),
                                 &m_pFont);
         }
 
         assert(hr == S_OK);
     }
 
-    virtual void DrawText_(const std::string& msg, const int x, const int y, const int transparency)
+    virtual void DrawText_(const std::wstring& msg, const int x, const int y, const int transparency)
     {
         RECT rect = { x, y, 0, 0 };
         m_pFont->DrawText(NULL, msg.c_str(), -1, &rect, DT_LEFT | DT_NOCLIP,
@@ -174,15 +175,15 @@ class SoundEffect : public ISoundEffect
 {
     virtual void PlayMove() override
     {
-        PlaySound("cursor_move.wav", NULL, SND_FILENAME | SND_ASYNC);
+        PlaySound(_T("cursor_move.wav"), NULL, SND_FILENAME | SND_ASYNC);
     }
     virtual void PlayClick() override
     {
-        PlaySound("cursor_confirm.wav", NULL, SND_FILENAME | SND_ASYNC);
+        PlaySound(_T("cursor_confirm.wav"), NULL, SND_FILENAME | SND_ASYNC);
     }
     virtual void PlayBack() override
     {
-        PlaySound("cursor_cancel.wav", NULL, SND_FILENAME | SND_ASYNC);
+        PlaySound(_T("cursor_cancel.wav"), NULL, SND_FILENAME | SND_ASYNC);
     }
     virtual void Init() override
     {
@@ -204,7 +205,7 @@ bool bShowMenu = true;
 
 StorehouseLib menu;
 
-void TextDraw(LPD3DXFONT pFont, char* text, int X, int Y)
+void TextDraw(LPD3DXFONT pFont, wchar_t* text, int X, int Y)
 {
     RECT rect = { X,Y,0,0 };
     pFont->DrawText(NULL, text, -1, &rect, DT_LEFT | DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 0, 0));
@@ -251,7 +252,7 @@ HRESULT InitD3D(HWND hWnd)
         OUT_TT_ONLY_PRECIS,
         ANTIALIASED_QUALITY,
         FF_DONTCARE,
-        "ＭＳ ゴシック",
+        _T("ＭＳ ゴシック"),
         &g_pFont);
     if FAILED(hr)
     {
@@ -260,11 +261,11 @@ HRESULT InitD3D(HWND hWnd)
 
     LPD3DXBUFFER pD3DXMtrlBuffer = NULL;
 
-    if (FAILED(D3DXLoadMeshFromX("cube.x", D3DXMESH_SYSTEMMEM,
+    if (FAILED(D3DXLoadMeshFromX(_T("cube.x"), D3DXMESH_SYSTEMMEM,
         g_pd3dDevice, NULL, &pD3DXMtrlBuffer, NULL,
         &dwNumMaterials, &pMesh)))
     {
-        MessageBox(NULL, "Xファイルの読み込みに失敗しました", NULL, MB_OK);
+        MessageBox(NULL, _T("Xファイルの読み込みに失敗しました"), NULL, MB_OK);
         return E_FAIL;
     }
     d3dxMaterials = (D3DXMATERIAL*)pD3DXMtrlBuffer->GetBufferPointer();
@@ -276,14 +277,16 @@ HRESULT InitD3D(HWND hWnd)
         pMaterials[i] = d3dxMaterials[i].MatD3D;
         pMaterials[i].Ambient = pMaterials[i].Diffuse;
         pTextures[i] = NULL;
-        if (d3dxMaterials[i].pTextureFilename != NULL &&
-            lstrlen(d3dxMaterials[i].pTextureFilename) > 0)
+
+        int len = MultiByteToWideChar(CP_UTF8, 0, d3dxMaterials[i].pTextureFilename, -1, nullptr, 0);
+        std::wstring result(len - 1, 0);
+        MultiByteToWideChar(CP_UTF8, 0, d3dxMaterials[i].pTextureFilename, -1, &result[0], len);
+
+        if (!result.empty())
         {
-            if (FAILED(D3DXCreateTextureFromFile(g_pd3dDevice,
-                d3dxMaterials[i].pTextureFilename,
-                &pTextures[i])))
+            if (FAILED(D3DXCreateTextureFromFile(g_pd3dDevice, result.c_str(), &pTextures[i])))
             {
-                MessageBox(NULL, "テクスチャの読み込みに失敗しました", NULL, MB_OK);
+                MessageBox(NULL, _T("テクスチャの読み込みに失敗しました"), NULL, MB_OK);
             }
         }
     }
@@ -291,7 +294,7 @@ HRESULT InitD3D(HWND hWnd)
 
     D3DXCreateEffectFromFile(
         g_pd3dDevice,
-        "simple.fx",
+        _T("simple.fx"),
         NULL,
         NULL,
         D3DXSHADER_DEBUG,
@@ -301,10 +304,10 @@ HRESULT InitD3D(HWND hWnd)
     );
 
     Sprite* sprCursor = new Sprite(g_pd3dDevice);
-    sprCursor->Load("cursor.png");
+    sprCursor->Load(_T("cursor.png"));
 
     Sprite* sprBackground = new Sprite(g_pd3dDevice);
-    sprBackground->Load("background.png");
+    sprBackground->Load(_T("background.png"));
 
     IFont* pFont = new Font(g_pd3dDevice);
     pFont->Init(true);
@@ -320,8 +323,8 @@ HRESULT InitD3D(HWND hWnd)
             StoreItem storeItem;
             storeItem.SetId(i);
             storeItem.SetSubId(1);
-            std::string work;
-            work = "アイテムＡＡＡ" + std::to_string(i);
+            std::wstring work;
+            work = _T("アイテムＡＡＡ") + std::to_wstring(i);
             storeItem.SetName(work);
             vs.push_back(storeItem);
         }
@@ -333,8 +336,8 @@ HRESULT InitD3D(HWND hWnd)
             StoreItem storeItem;
             storeItem.SetId(i+30);
             storeItem.SetSubId(1);
-            std::string work;
-            work = "アイテムＢＢＢ" + std::to_string(i);
+            std::wstring work;
+            work = _T("アイテムＢＢＢ") + std::to_wstring(i);
             storeItem.SetName(work);
             vs.push_back(storeItem);
         }
@@ -376,8 +379,8 @@ VOID Render()
 
     if (SUCCEEDED(g_pd3dDevice->BeginScene()))
     {
-        char msg[128];
-        strcpy_s(msg, 128, "Cキーでクラフト画面を表示");
+        wchar_t msg[128];
+        wcscpy_s(msg, 128, _T("Cキーでクラフト画面を表示"));
         TextDraw(g_pFont, msg, 0, 0);
 
         pEffect->SetTechnique("BasicTec");
@@ -443,17 +446,17 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         case VK_RETURN:
         {
-            std::string result = menu.Into();
+            std::wstring result = menu.Into();
             auto vs = split(result, ':');
 
             int id_ = std::stoi(vs.at(2));
             int subId_ = std::stoi(vs.at(3));
 
-            if (vs.at(0) == "left")
+            if (vs.at(0) == _T("left"))
             {
                 menu.MoveFromInventoryToStorehouse(id_, subId_);
             }
-            else if (vs.at(0) == "right")
+            else if (vs.at(0) == _T("right"))
             {
                 menu.MoveFromStorehouseToInventory(id_, subId_);
             }
@@ -462,9 +465,9 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }
         case VK_BACK:
         {
-            std::string result;
+            std::wstring result;
             result = menu.Back();
-            if (result == "EXIT")
+            if (result == _T("EXIT"))
             {
                 bShowMenu = false;
             }
@@ -489,9 +492,9 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
     case WM_RBUTTONDOWN:
     {
-        std::string result;
+        std::wstring result;
         result = menu.Back();
-        if (result == "EXIT")
+        if (result == _T("EXIT"))
         {
             bShowMenu = false;
         }
@@ -519,7 +522,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ 
 {
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, MsgProc, 0L, 0L,
                       GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
-                      "Window1", NULL };
+                      _T("Window1"), NULL };
     RegisterClassEx(&wc);
 
     RECT rect;
@@ -530,7 +533,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ 
     rect.top = 0;
     rect.left = 0;
 
-    HWND hWnd = CreateWindow("Window1", "Hello DirectX9 World !!",
+    HWND hWnd = CreateWindow(_T("Window1"), _T("Hello DirectX9 World !!"),
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom,
         NULL, NULL, wc.hInstance, NULL);
 
@@ -547,6 +550,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ 
         }
     }
 
-    UnregisterClass("Window1", wc.hInstance);
+    UnregisterClass(_T("Window1"), wc.hInstance);
     return 0;
 }

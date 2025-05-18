@@ -1,14 +1,15 @@
 ﻿#include "StorehouseLib.h"
 #include <sstream>
 #include <algorithm>
+#include <tchar.h>
 
 using namespace NSStorehouseLib;
 
-static std::vector<std::string> split(const std::string& s, char delim)
+static std::vector<std::wstring> split(const std::wstring& s, wchar_t delim)
 {
-    std::vector<std::string> result;
-    std::stringstream ss(s);
-    std::string item;
+    std::vector<std::wstring> result;
+    std::wstringstream ss(s);
+    std::wstring item;
 
     while (getline(ss, item, delim))
     {
@@ -129,7 +130,7 @@ void NSStorehouseLib::StorehouseLib::MoveFromStorehouseToInventory(const int id,
               });
 }
 
-std::string StorehouseLib::Up()
+std::wstring StorehouseLib::Up()
 {
     int work = 0;
 
@@ -179,10 +180,10 @@ std::string StorehouseLib::Up()
             }
         }
     }
-    return "";
+    return L"";
 }
 
-std::string StorehouseLib::Down()
+std::wstring StorehouseLib::Down()
 {
     int work = 0;
     if (m_eFocus == eFocus::LEFT)
@@ -233,10 +234,10 @@ std::string StorehouseLib::Down()
             }
         }
     }
-    return "";
+    return L"";
 }
 
-std::string StorehouseLib::Right()
+std::wstring StorehouseLib::Right()
 {
     if (!m_rightList.empty())
     {
@@ -256,10 +257,10 @@ std::string StorehouseLib::Right()
             }
         }
     }
-    return std::string();
+    return std::wstring();
 }
 
-std::string StorehouseLib::Left()
+std::wstring StorehouseLib::Left()
 {
     if (!m_leftList.empty())
     {
@@ -279,20 +280,20 @@ std::string StorehouseLib::Left()
             }
         }
     }
-    return std::string();
+    return std::wstring();
 }
 
-std::string StorehouseLib::Into()
+std::wstring StorehouseLib::Into()
 {
-    std::string result;
+    std::wstring result;
     if (m_eFocus == eFocus::LEFT)
     {
         if (!m_leftList.empty())
         {
-            result = "left:";
+            result = _T("left:");
             result += m_leftList.at(m_leftSelect).GetName();
-            result += ":" + std::to_string(m_leftList.at(m_leftSelect).GetId());
-            result += ":" + std::to_string(m_leftList.at(m_leftSelect).GetSubId());
+            result += _T(":") + std::to_wstring(m_leftList.at(m_leftSelect).GetId());
+            result += _T(":") + std::to_wstring(m_leftList.at(m_leftSelect).GetSubId());
             m_SE->PlayClick();
 
             if (m_leftList.size() == 1)
@@ -335,10 +336,10 @@ std::string StorehouseLib::Into()
     {
         if (!m_rightList.empty())
         {
-            result = "right:";
+            result = _T("right:");
             result += m_rightList.at(m_rightSelect).GetName();
-            result += ":" + std::to_string(m_rightList.at(m_rightSelect).GetId());
-            result += ":" + std::to_string(m_rightList.at(m_rightSelect).GetSubId());
+            result += _T(":") + std::to_wstring(m_rightList.at(m_rightSelect).GetId());
+            result += _T(":") + std::to_wstring(m_rightList.at(m_rightSelect).GetSubId());
             m_SE->PlayClick();
 
             if (m_rightList.size() == 1)
@@ -381,21 +382,21 @@ std::string StorehouseLib::Into()
     return result;
 }
 
-std::string StorehouseLib::Back()
+std::wstring StorehouseLib::Back()
 {
-    std::string result;
-    result = "EXIT";
+    std::wstring result;
+    result = _T("EXIT");
     m_SE->PlayBack();
 
     return result;
 }
 
-std::string NSStorehouseLib::StorehouseLib::Next()
+std::wstring NSStorehouseLib::StorehouseLib::Next()
 {
     return Down();
 }
 
-std::string NSStorehouseLib::StorehouseLib::Previous()
+std::wstring NSStorehouseLib::StorehouseLib::Previous()
 {
     return Up();
 }
@@ -562,9 +563,9 @@ void StorehouseLib::CursorOn(const int x, const int y)
     }
 }
 
-std::string StorehouseLib::Click(const int x, const int y)
+std::wstring StorehouseLib::Click(const int x, const int y)
 {
-    std::string result;
+    std::wstring result;
     m_SE->PlayClick();
     if (m_eFocus == eFocus::LEFT)
     {
@@ -709,21 +710,21 @@ void StorehouseLib::Draw()
     // 上部分の左に「インベントリ」、右側に「倉庫」と表示する
     if (!m_bEnglish)
     {
-        m_font->DrawText_("インベントリ", 205, 50, 200);
+        m_font->DrawText_(_T("インベントリ"), 205, 50, 200);
 
-        m_font->DrawText_("倉庫", 855, 50, 200);
+        m_font->DrawText_(_T("倉庫"), 855, 50, 200);
 
-        m_font->DrawText_("左右で切り替え、上下でアイテムを選択", 1085, 30, 100);
-        m_font->DrawText_("決定ボタンでアイテムを反対側に移動", 1085, 80, 100);
+        m_font->DrawText_(_T("左右で切り替え、上下でアイテムを選択"), 1085, 30, 100);
+        m_font->DrawText_(_T("決定ボタンでアイテムを反対側に移動"), 1085, 80, 100);
     }
     else
     {
-        m_font->DrawText_("Inventory", 205, 50, 200);
+        m_font->DrawText_(_T("Inventory"), 205, 50, 200);
 
-        m_font->DrawText_("Storage", 855, 50, 200);
+        m_font->DrawText_(_T("Storage"), 855, 50, 200);
 
-        m_font->DrawText_("L/R: Switch U/D: Select item", 1085, 30, 100);
-        m_font->DrawText_("Confirm: Move to other side", 1085, 80, 100);
+        m_font->DrawText_(_T("L/R: Switch U/D: Select item"), 1085, 30, 100);
+        m_font->DrawText_(_T("Confirm: Move to other side"), 1085, 80, 100);
     }
 
     //--------------------------------------------------------
@@ -732,15 +733,15 @@ void StorehouseLib::Draw()
 
     if (!m_bEnglish)
     {
-        m_font->DrawText_("アイテム名", 200, 135, 120);
-        m_font->DrawText_("強化", 200 + 350, 135, 120);
-        m_font->DrawText_("耐久", 200 + 450, 135, 120);
+        m_font->DrawText_(_T("アイテム名"), 200, 135, 120);
+        m_font->DrawText_(_T("強化"), 200 + 350, 135, 120);
+        m_font->DrawText_(_T("耐久"), 200 + 450, 135, 120);
     }
     else
     {
-        m_font->DrawText_("Item", 200, 135, 120);
-        m_font->DrawText_("Level", 200 + 350, 135, 120);
-        m_font->DrawText_("Durability", 200 + 450, 135, 120);
+        m_font->DrawText_(_T("Item"), 200, 135, 120);
+        m_font->DrawText_(_T("Level"), 200 + 350, 135, 120);
+        m_font->DrawText_(_T("Durability"), 200 + 450, 135, 120);
     }
 
     if ((int)m_leftList.size() >= PANEL_ROW_MAX)
@@ -753,14 +754,14 @@ void StorehouseLib::Draw()
 
             if (m_leftList.at(i).GetLevel() != -1)
             {
-                m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
+                m_font->DrawText_(std::to_wstring(m_leftList.at(i).GetLevel()),
                                   LEFT_PANEL_STARTX + 400,
                                   LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
             }
 
             if (m_leftList.at(i).GetDurability() != -1)
             {
-                m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
+                m_font->DrawText_(std::to_wstring(m_leftList.at(i).GetDurability()),
                                   LEFT_PANEL_STARTX + 500,
                                   LEFT_PANEL_STARTY + ((i - m_leftBegin) * PANEL_HEIGHT));
             }
@@ -776,14 +777,14 @@ void StorehouseLib::Draw()
 
             if (m_leftList.at(i).GetLevel() != -1)
             {
-                m_font->DrawText_(std::to_string(m_leftList.at(i).GetLevel()),
+                m_font->DrawText_(std::to_wstring(m_leftList.at(i).GetLevel()),
                                   LEFT_PANEL_STARTX + 400,
                                   LEFT_PANEL_STARTY + (((int)i - m_leftBegin) * PANEL_HEIGHT));
             }
 
             if (m_leftList.at(i).GetDurability() != -1)
             {
-                m_font->DrawText_(std::to_string(m_leftList.at(i).GetDurability()),
+                m_font->DrawText_(std::to_wstring(m_leftList.at(i).GetDurability()),
                                   LEFT_PANEL_STARTX + 500,
                                   LEFT_PANEL_STARTY + (((int)i - m_leftBegin) * PANEL_HEIGHT));
             }
@@ -796,15 +797,15 @@ void StorehouseLib::Draw()
 
     if (!m_bEnglish)
     {
-        m_font->DrawText_("アイテム名", 850, 135, 120);
-        m_font->DrawText_("強化", 850 + 350, 135, 120);
-        m_font->DrawText_("耐久", 850 + 450, 135, 120);
+        m_font->DrawText_(_T("アイテム名"), 850, 135, 120);
+        m_font->DrawText_(_T("強化"), 850 + 350, 135, 120);
+        m_font->DrawText_(_T("耐久"), 850 + 450, 135, 120);
     }
     else
     {
-        m_font->DrawText_("Item", 850, 135, 120);
-        m_font->DrawText_("Level", 850 + 350, 135, 120);
-        m_font->DrawText_("Durability", 850 + 450, 135, 120);
+        m_font->DrawText_(_T("Item"), 850, 135, 120);
+        m_font->DrawText_(_T("Level"), 850 + 350, 135, 120);
+        m_font->DrawText_(_T("Durability"), 850 + 450, 135, 120);
     }
 
     if ((int)m_rightList.size() >= PANEL_ROW_MAX)
@@ -817,14 +818,14 @@ void StorehouseLib::Draw()
 
             if (m_rightList.at(i).GetLevel() != -1)
             {
-                m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
+                m_font->DrawText_(std::to_wstring(m_rightList.at(i).GetLevel()),
                                   RIGHT_PANEL_STARTX + 400,
                                   RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
             }
 
             if (m_rightList.at(i).GetDurability() != -1)
             {
-                m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
+                m_font->DrawText_(std::to_wstring(m_rightList.at(i).GetDurability()),
                                   RIGHT_PANEL_STARTX + 500,
                                   RIGHT_PANEL_STARTY + ((i - m_rightBegin) * PANEL_HEIGHT));
             }
@@ -840,14 +841,14 @@ void StorehouseLib::Draw()
 
             if (m_rightList.at(i).GetLevel() != -1)
             {
-                m_font->DrawText_(std::to_string(m_rightList.at(i).GetLevel()),
+                m_font->DrawText_(std::to_wstring(m_rightList.at(i).GetLevel()),
                                   RIGHT_PANEL_STARTX + 400,
                                   RIGHT_PANEL_STARTY + (((int)i - m_rightBegin) * PANEL_HEIGHT));
             }
 
             if (m_rightList.at(i).GetDurability() != -1)
             {
-                m_font->DrawText_(std::to_string(m_rightList.at(i).GetDurability()),
+                m_font->DrawText_(std::to_wstring(m_rightList.at(i).GetDurability()),
                                   RIGHT_PANEL_STARTX + 500,
                                   RIGHT_PANEL_STARTY + (((int)i - m_rightBegin) * PANEL_HEIGHT));
             }
@@ -893,12 +894,12 @@ int NSStorehouseLib::StoreItem::GetSubId() const
     return m_idSub;
 }
 
-void NSStorehouseLib::StoreItem::SetName(const std::string& arg)
+void NSStorehouseLib::StoreItem::SetName(const std::wstring& arg)
 {
     m_name = arg;
 }
 
-std::string NSStorehouseLib::StoreItem::GetName() const
+std::wstring NSStorehouseLib::StoreItem::GetName() const
 {
     return m_name;
 }

@@ -12,14 +12,14 @@ class ISprite
 {
 public:
     virtual void DrawImage(const int x, const int y, const int transparency = 255) = 0;
-    virtual void Load(const std::string& filepath) = 0;
+    virtual void Load(const std::wstring& filepath) = 0;
     virtual ~ISprite() {};
 };
 
 class IFont
 {
 public:
-    virtual void DrawText_(const std::string& msg,
+    virtual void DrawText_(const std::wstring& msg,
                            const int x,
                            const int y,
                            const int transparency = 255) = 0;
@@ -47,8 +47,8 @@ public:
     void SetSubId(const int arg);
     int GetSubId() const;
 
-    void SetName(const std::string& arg);
-    std::string GetName() const;
+    void SetName(const std::wstring& arg);
+    std::wstring GetName() const;
 
     void SetLevel(const int arg);
     int GetLevel() const;
@@ -60,7 +60,7 @@ private:
 
     int m_id = 0;
     int m_idSub = 0;
-    std::string m_name;
+    std::wstring m_name;
 
     int m_level = -1;
     int m_durability = -1;
@@ -82,16 +82,16 @@ public:
     void MoveFromInventoryToStorehouse(const int id, const int subid);
     void MoveFromStorehouseToInventory(const int id, const int subid);
 
-    std::string Up();
-    std::string Down();
-    std::string Right();
-    std::string Left();
-    std::string Into();
-    std::string Back();
-    std::string Next();
-    std::string Previous();
+    std::wstring Up();
+    std::wstring Down();
+    std::wstring Right();
+    std::wstring Left();
+    std::wstring Into();
+    std::wstring Back();
+    std::wstring Next();
+    std::wstring Previous();
     void CursorOn(const int x, const int y);
-    std::string Click(const int x, const int y);
+    std::wstring Click(const int x, const int y);
     void Draw();
     
 private:
