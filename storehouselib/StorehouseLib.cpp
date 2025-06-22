@@ -42,7 +42,7 @@ void NSStorehouseLib::StorehouseLib::SetStorehouseList(const std::vector<StoreIt
     m_rightList = arg;
 }
 
-void NSStorehouseLib::StorehouseLib::MoveFromInventoryToStorehouse(const int id, const int subid)
+void NSStorehouseLib::StorehouseLib::MoveFromInventoryToStorehouse(const std::wstring& id, const int subid)
 {
     auto it = std::find_if(m_leftList.begin(), m_leftList.end(),
                            [&](const StoreItem& x)
@@ -86,7 +86,7 @@ void NSStorehouseLib::StorehouseLib::MoveFromInventoryToStorehouse(const int id,
               });
 }
 
-void NSStorehouseLib::StorehouseLib::MoveFromStorehouseToInventory(const int id, const int subid)
+void NSStorehouseLib::StorehouseLib::MoveFromStorehouseToInventory(const std::wstring& id, const int subid)
 {
     auto it = std::find_if(m_rightList.begin(), m_rightList.end(),
                            [&](const StoreItem& x)
@@ -292,7 +292,7 @@ std::wstring StorehouseLib::Into()
         {
             result = _T("left:");
             result += m_leftList.at(m_leftSelect).GetName();
-            result += _T(":") + std::to_wstring(m_leftList.at(m_leftSelect).GetId());
+            result += _T(":") + m_leftList.at(m_leftSelect).GetId();
             result += _T(":") + std::to_wstring(m_leftList.at(m_leftSelect).GetSubId());
             m_SE->PlayClick();
 
@@ -338,7 +338,7 @@ std::wstring StorehouseLib::Into()
         {
             result = _T("right:");
             result += m_rightList.at(m_rightSelect).GetName();
-            result += _T(":") + std::to_wstring(m_rightList.at(m_rightSelect).GetId());
+            result += _T(":") + m_rightList.at(m_rightSelect).GetId();
             result += _T(":") + std::to_wstring(m_rightList.at(m_rightSelect).GetSubId());
             m_SE->PlayClick();
 
@@ -874,12 +874,12 @@ void StorehouseLib::Draw()
 
 }
 
-void NSStorehouseLib::StoreItem::SetId(const int arg)
+void NSStorehouseLib::StoreItem::SetId(const std::wstring& arg)
 {
     m_id = arg;
 }
 
-int NSStorehouseLib::StoreItem::GetId() const
+std::wstring NSStorehouseLib::StoreItem::GetId() const
 {
     return m_id;
 }

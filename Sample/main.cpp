@@ -321,7 +321,7 @@ HRESULT InitD3D(HWND hWnd)
         for (int i = 0; i < 15; ++i)
         {
             StoreItem storeItem;
-            storeItem.SetId(i);
+            storeItem.SetId(L"itemAAA");
             storeItem.SetSubId(1);
             std::wstring work;
             work = _T("アイテムＡＡＡ") + std::to_wstring(i);
@@ -334,7 +334,7 @@ HRESULT InitD3D(HWND hWnd)
         for (int i = 0; i < 20; ++i)
         {
             StoreItem storeItem;
-            storeItem.SetId(i+30);
+            storeItem.SetId(L"itemBBB");
             storeItem.SetSubId(1);
             std::wstring work;
             work = _T("アイテムＢＢＢ") + std::to_wstring(i);
@@ -449,7 +449,7 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             std::wstring result = menu.Into();
             auto vs = split(result, ':');
 
-            int id_ = std::stoi(vs.at(2));
+            auto id_ = vs.at(2);
             int subId_ = std::stoi(vs.at(3));
 
             if (vs.at(0) == _T("left"))

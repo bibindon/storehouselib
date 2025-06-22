@@ -41,8 +41,8 @@ public:
 class StoreItem
 {
 public:
-    void SetId(const int arg);
-    int GetId() const;
+    void SetId(const std::wstring& arg);
+    std::wstring GetId() const;
 
     void SetSubId(const int arg);
     int GetSubId() const;
@@ -58,7 +58,7 @@ public:
 
 private:
 
-    int m_id = 0;
+    std::wstring m_id;
     int m_idSub = 0;
     std::wstring m_name;
 
@@ -79,8 +79,8 @@ public:
     void SetInventoryList(const std::vector<StoreItem>& arg);
     void SetStorehouseList(const std::vector<StoreItem>& arg);
 
-    void MoveFromInventoryToStorehouse(const int id, const int subid);
-    void MoveFromStorehouseToInventory(const int id, const int subid);
+    void MoveFromInventoryToStorehouse(const std::wstring& id, const int subid);
+    void MoveFromStorehouseToInventory(const std::wstring& id, const int subid);
 
     std::wstring Up();
     std::wstring Down();
