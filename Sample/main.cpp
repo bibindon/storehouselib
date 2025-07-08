@@ -331,7 +331,7 @@ HRESULT InitD3D(HWND hWnd)
         menu.SetInventoryList(vs);
         vs.clear();
 
-        for (int i = 0; i < 20; ++i)
+        for (int i = 0; i < 5; ++i)
         {
             StoreItem storeItem;
             storeItem.SetId(L"itemBBB");
@@ -487,7 +487,7 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONDOWN:
     {
         POINTS mouse_p = MAKEPOINTS(lParam);
-        menu.Click(mouse_p.x, mouse_p.y);
+        auto result = menu.Click(mouse_p.x, mouse_p.y);
         break;
     }
     case WM_RBUTTONDOWN:

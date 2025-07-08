@@ -288,6 +288,13 @@ std::wstring StorehouseLib::Into()
     std::wstring result;
     if (m_eFocus == eFocus::LEFT)
     {
+        if (m_leftSelect >= m_leftList.size())
+        {
+            m_leftCursor = 0;
+            m_leftSelect = 0;
+            return result;
+        }
+
         if (!m_leftList.empty())
         {
             result = _T("left:");
@@ -334,6 +341,13 @@ std::wstring StorehouseLib::Into()
     }
     else if (m_eFocus == eFocus::RIGHT)
     {
+        if (m_rightSelect >= m_rightList.size())
+        {
+            m_rightCursor = 0;
+            m_rightSelect = 0;
+            return result;
+        }
+
         if (!m_rightList.empty())
         {
             result = _T("right:");
