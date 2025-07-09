@@ -321,7 +321,8 @@ HRESULT InitD3D(HWND hWnd)
         for (int i = 0; i < 15; ++i)
         {
             StoreItem storeItem;
-            storeItem.SetId(L"itemAAA");
+            std::wstring id = L"itemAAA" + std::to_wstring(i);
+            storeItem.SetId(id);
             storeItem.SetSubId(1);
             std::wstring work;
             work = _T("アイテムＡＡＡ") + std::to_wstring(i);
@@ -331,10 +332,11 @@ HRESULT InitD3D(HWND hWnd)
         menu.SetInventoryList(vs);
         vs.clear();
 
-        for (int i = 0; i < 5; ++i)
+        for (int i = 0; i < 25; ++i)
         {
             StoreItem storeItem;
-            storeItem.SetId(L"itemBBB");
+            std::wstring id = L"itemBBB" + std::to_wstring(i);
+            storeItem.SetId(id);
             storeItem.SetSubId(1);
             std::wstring work;
             work = _T("アイテムＢＢＢ") + std::to_wstring(i);
@@ -380,7 +382,7 @@ VOID Render()
     if (SUCCEEDED(g_pd3dDevice->BeginScene()))
     {
         wchar_t msg[128];
-        wcscpy_s(msg, 128, _T("Cキーでクラフト画面を表示"));
+        wcscpy_s(msg, 128, _T("Cキーで倉庫画面を表示"));
         TextDraw(g_pFont, msg, 0, 0);
 
         pEffect->SetTechnique("BasicTec");
@@ -422,16 +424,16 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         switch (wParam)
         {
         case 'C':
-            if (bShowMenu == false)
+            if (bShowMenu)
+            {
+                bShowMenu = false;
+            }
+            else
             {
                 bShowMenu = true;
             }
+
             break;
-        // メニューを表示している最中にメニューに表示されている内容を変える
-        case VK_F2:
-        {
-            // menu.SetItem(itemInfoList);
-        }
         case VK_UP:
             menu.Up();
             break;

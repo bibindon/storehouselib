@@ -70,20 +70,30 @@ void NSStorehouseLib::StorehouseLib::MoveFromInventoryToStorehouse(const std::ws
                   {
                       return false;
                   }
-                  // left.GetId() == right.GetId()
                   else
                   {
                       if (left.GetSubId() < right.GetSubId())
                       {
                           return true;
                       }
-                      //  left.GetSubId() >= right.GetSubId()
                       else
                       {
                           return false;
                       }
                   }
               });
+
+    // スクロールしている状態でアイテムを反対側に移動し
+    // さらに、そのとき一番下の要素が最後の要素だった場合
+    // 下に1つスクロールする
+    if (m_leftBegin != 0)
+    {
+        if (m_leftBegin + PANEL_ROW_MAX - 1 >= (int)m_leftList.size())
+        {
+            m_leftBegin--;
+            m_leftSelect--;
+        }
+    }
 }
 
 void NSStorehouseLib::StorehouseLib::MoveFromStorehouseToInventory(const std::wstring& id, const int subid)
@@ -114,20 +124,30 @@ void NSStorehouseLib::StorehouseLib::MoveFromStorehouseToInventory(const std::ws
                   {
                       return false;
                   }
-                  // left.GetId() == right.GetId()
                   else
                   {
                       if (left.GetSubId() < right.GetSubId())
                       {
                           return true;
                       }
-                      //  left.GetSubId() >= right.GetSubId()
                       else
                       {
                           return false;
                       }
                   }
               });
+
+    // スクロールしている状態でアイテムを反対側に移動し
+    // さらに、そのとき一番下の要素が最後の要素だった場合
+    // 下に1つスクロールする
+    if (m_rightBegin != 0)
+    {
+        if (m_rightBegin + PANEL_ROW_MAX - 1 >= (int)m_rightList.size())
+        {
+            m_rightBegin--;
+            m_rightSelect--;
+        }
+    }
 }
 
 std::wstring StorehouseLib::Up()
