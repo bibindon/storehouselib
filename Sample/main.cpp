@@ -18,8 +18,45 @@
 #include <sstream>
 #include <cassert>
 #include <tchar.h>
+#include <type_traits>
 
-std::vector<std::wstring> split(const std::wstring& s, wchar_t delim)
+// -------------------------------------------------
+// 共通デリータ（テンプレート呼び出し演算子で何型でも Release）
+// -------------------------------------------------
+struct ComReleaser
+{
+    template <class U>
+    void operator()(U* p) const noexcept
+    {
+        if (p != nullptr)
+        {
+            p->Release();
+        }
+    }
+};
+
+// -------------------------------------------------
+// 「ポインタならはがす」ユーティリティ型
+// -------------------------------------------------
+template <class T>
+using InterfaceOf = std::remove_pointer_t<std::remove_cv_t<T>>;
+
+// -------------------------------------------------
+//   - T が ID3DXFont でも LPD3DXFONT(ID3DXFont*) でも
+//     InterfaceOf<T> は ID3DXFont になる
+// -------------------------------------------------
+template <class T>
+using Ptr = std::unique_ptr<InterfaceOf<T>, ComReleaser>;
+
+// ポインタのポインタを取得
+template<class P>
+auto PtrAddr(P& p) -> typename P::element_type**       // ← ココがポイント
+{
+    p.reset();                                         // 既存を Release
+    return reinterpret_cast<typename P::element_type**>(&p);
+}
+
+static std::vector<std::wstring> split(const std::wstring& s, wchar_t delim)
 {
     std::vector<std::wstring> result;
     std::wstringstream ss(s);
@@ -35,13 +72,11 @@ std::vector<std::wstring> split(const std::wstring& s, wchar_t delim)
 
 using namespace NSStorehouseLib;
 
-#define SAFE_RELEASE(p) { if (p) { (p)->Release(); (p) = NULL; } }
-
 class Sprite : public ISprite
 {
 public:
 
-    Sprite(LPDIRECT3DDEVICE9 dev)
+    Sprite(const Ptr<LPDIRECT3DDEVICE9>& dev)
         : m_pD3DDevice(dev)
     {
     }
@@ -55,29 +90,28 @@ public:
             0,
             static_cast<LONG>(m_width),
             static_cast<LONG>(m_height) };
-        D3DXVECTOR3 center { 0, 0, 0 };
-        m_D3DSprite->Draw(
-            m_pD3DTexture,
-            &rect,
-            &center,
-            &pos,
-            D3DCOLOR_ARGB(transparency, 255, 255, 255));
-        m_D3DSprite->End();
 
+        D3DXVECTOR3 center { 0, 0, 0 };
+
+        m_D3DSprite->Draw(m_pD3DTexture.get(),
+                          &rect,
+                          &center,
+                          &pos,
+                          D3DCOLOR_ARGB(transparency, 255, 255, 255));
+
+        m_D3DSprite->End();
     }
 
     void Load(const std::wstring& filepath) override
     {
-        LPD3DXSPRITE tempSprite { nullptr };
-        if (FAILED(D3DXCreateSprite(m_pD3DDevice, &m_D3DSprite)))
+        if (FAILED(D3DXCreateSprite(m_pD3DDevice.get(), PtrAddr(m_D3DSprite))))
         {
             throw std::exception("Failed to create a sprite.");
         }
 
-        if (FAILED(D3DXCreateTextureFromFile(
-            m_pD3DDevice,
-            filepath.c_str(),
-            &m_pD3DTexture)))
+        if (FAILED(D3DXCreateTextureFromFile(m_pD3DDevice.get(),
+                                             filepath.c_str(),
+                                             PtrAddr(m_pD3DTexture))))
         {
             throw std::exception("Failed to create a texture.");
         }
@@ -93,15 +127,13 @@ public:
 
     ~Sprite()
     {
-        m_D3DSprite->Release();
-        m_pD3DTexture->Release();
     }
 
 private:
 
-    LPDIRECT3DDEVICE9 m_pD3DDevice = NULL;
-    LPD3DXSPRITE m_D3DSprite = NULL;
-    LPDIRECT3DTEXTURE9 m_pD3DTexture = NULL;
+    const Ptr<LPDIRECT3DDEVICE9>& m_pD3DDevice;
+    Ptr<LPD3DXSPRITE> m_D3DSprite;
+    Ptr<LPDIRECT3DTEXTURE9> m_pD3DTexture;
     UINT m_width { 0 };
     UINT m_height { 0 };
 };
@@ -110,7 +142,7 @@ class Font : public IFont
 {
 public:
 
-    Font(LPDIRECT3DDEVICE9 pD3DDevice)
+    Font(const Ptr<LPDIRECT3DDEVICE9>& pD3DDevice)
         : m_pD3DDevice(pD3DDevice)
     {
     }
@@ -120,7 +152,7 @@ public:
         HRESULT hr = E_FAIL;
         if (!bEnglish)
         {
-            hr = D3DXCreateFont(m_pD3DDevice,
+            hr = D3DXCreateFont(m_pD3DDevice.get(),
                                 24,
                                 0,
                                 FW_NORMAL,
@@ -131,11 +163,11 @@ public:
                                 ANTIALIASED_QUALITY,
                                 FF_DONTCARE,
                                 _T("ＭＳ 明朝"),
-                                &m_pFont);
+                                PtrAddr(m_pFont));
         }
         else
         {
-            hr = D3DXCreateFont(m_pD3DDevice,
+            hr = D3DXCreateFont(m_pD3DDevice.get(),
                                 24,
                                 0,
                                 FW_NORMAL,
@@ -146,7 +178,7 @@ public:
                                 ANTIALIASED_QUALITY,
                                 FF_DONTCARE,
                                 _T("Times New Roman"),
-                                &m_pFont);
+                                PtrAddr(m_pFont));
         }
 
         assert(hr == S_OK);
@@ -155,19 +187,22 @@ public:
     virtual void DrawText_(const std::wstring& msg, const int x, const int y, const int transparency)
     {
         RECT rect = { x, y, 0, 0 };
-        m_pFont->DrawText(NULL, msg.c_str(), -1, &rect, DT_LEFT | DT_NOCLIP,
-            D3DCOLOR_ARGB(transparency, 255, 255, 255));
+        m_pFont->DrawText(NULL,
+                          msg.c_str(),
+                          -1,
+                          &rect,
+                          DT_LEFT | DT_NOCLIP,
+                          D3DCOLOR_ARGB(transparency, 255, 255, 255));
     }
 
     ~Font()
     {
-        m_pFont->Release();
     }
 
 private:
 
-    LPDIRECT3DDEVICE9 m_pD3DDevice = NULL;
-    LPD3DXFONT m_pFont = NULL;
+    const Ptr<LPDIRECT3DDEVICE9>& m_pD3DDevice;
+    Ptr<LPD3DXFONT> m_pFont;
 };
 
 
@@ -191,29 +226,29 @@ class SoundEffect : public ISoundEffect
     }
 };
 
-LPDIRECT3D9 g_pD3D = NULL;
-LPDIRECT3DDEVICE9 g_pd3dDevice = NULL;
-LPD3DXFONT g_pFont = NULL;
-LPD3DXMESH pMesh = NULL;
-D3DMATERIAL9* pMaterials = NULL;
-LPDIRECT3DTEXTURE9* pTextures = NULL;
+Ptr<LPDIRECT3D9> g_pD3D;
+Ptr<LPDIRECT3DDEVICE9> g_pd3dDevice;
+Ptr<LPD3DXFONT> g_pFont;
+Ptr<LPD3DXMESH> pMesh;
+std::vector<Ptr<LPDIRECT3DTEXTURE9>> pTextures;
 DWORD dwNumMaterials = 0;
-LPD3DXEFFECT pEffect = NULL;
-D3DXMATERIAL* d3dxMaterials = NULL;
+Ptr<LPD3DXEFFECT> pEffect;
+D3DXMATERIAL* d3dxMaterials;
 float f = 0.0f;
 bool bShowMenu = true;
 
 StorehouseLib menu;
 
-void TextDraw(LPD3DXFONT pFont, wchar_t* text, int X, int Y)
+static void TextDraw(LPD3DXFONT pFont, wchar_t* text, int X, int Y)
 {
     RECT rect = { X,Y,0,0 };
     pFont->DrawText(NULL, text, -1, &rect, DT_LEFT | DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 0, 0));
 }
 
-HRESULT InitD3D(HWND hWnd)
+static HRESULT InitD3D(HWND hWnd)
 {
-    if (NULL == (g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)))
+    g_pD3D.reset( Direct3DCreate9(D3D_SDK_VERSION));
+    if (NULL == g_pD3D)
     {
         return E_FAIL;
     }
@@ -233,27 +268,30 @@ HRESULT InitD3D(HWND hWnd)
     d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
     d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
 
-    if (FAILED(g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &g_pd3dDevice)))
+    if (FAILED(g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
+                                    D3DCREATE_HARDWARE_VERTEXPROCESSING,
+                                    &d3dpp, PtrAddr(g_pd3dDevice))))
     {
-        if (FAILED(g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &g_pd3dDevice)))
+        if (FAILED(g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,
+                                        D3DCREATE_SOFTWARE_VERTEXPROCESSING,
+                                        &d3dpp, PtrAddr(g_pd3dDevice))))
         {
             return(E_FAIL);
         }
     }
 
-    HRESULT hr = D3DXCreateFont(
-        g_pd3dDevice,
-        20,
-        0,
-        FW_HEAVY,
-        1,
-        false,
-        SHIFTJIS_CHARSET,
-        OUT_TT_ONLY_PRECIS,
-        ANTIALIASED_QUALITY,
-        FF_DONTCARE,
-        _T("ＭＳ ゴシック"),
-        &g_pFont);
+    HRESULT hr = D3DXCreateFont(g_pd3dDevice.get(),
+                                20,
+                                0,
+                                FW_HEAVY,
+                                1,
+                                false,
+                                SHIFTJIS_CHARSET,
+                                OUT_TT_ONLY_PRECIS,
+                                ANTIALIASED_QUALITY,
+                                FF_DONTCARE,
+                                _T("ＭＳ ゴシック"),
+                                PtrAddr(g_pFont));
     if FAILED(hr)
     {
         return(E_FAIL);
@@ -261,16 +299,22 @@ HRESULT InitD3D(HWND hWnd)
 
     LPD3DXBUFFER pD3DXMtrlBuffer = NULL;
 
-    if (FAILED(D3DXLoadMeshFromX(_T("cube.x"), D3DXMESH_SYSTEMMEM,
-        g_pd3dDevice, NULL, &pD3DXMtrlBuffer, NULL,
-        &dwNumMaterials, &pMesh)))
+    if (FAILED(D3DXLoadMeshFromX(_T("cube.x"),
+                                 D3DXMESH_SYSTEMMEM,
+                                 g_pd3dDevice.get(),
+                                 NULL,
+                                 &pD3DXMtrlBuffer,
+                                 NULL,
+                                 &dwNumMaterials,
+                                 PtrAddr(pMesh))))
     {
         MessageBox(NULL, _T("Xファイルの読み込みに失敗しました"), NULL, MB_OK);
         return E_FAIL;
     }
     d3dxMaterials = (D3DXMATERIAL*)pD3DXMtrlBuffer->GetBufferPointer();
-    pMaterials = new D3DMATERIAL9[dwNumMaterials];
-    pTextures = new LPDIRECT3DTEXTURE9[dwNumMaterials];
+
+    std::vector<D3DMATERIAL9> pMaterials(dwNumMaterials);
+    pTextures.resize(dwNumMaterials);
 
     for (DWORD i = 0; i < dwNumMaterials; i++)
     {
@@ -284,7 +328,9 @@ HRESULT InitD3D(HWND hWnd)
 
         if (!result.empty())
         {
-            if (FAILED(D3DXCreateTextureFromFile(g_pd3dDevice, result.c_str(), &pTextures[i])))
+            if (FAILED(D3DXCreateTextureFromFile(g_pd3dDevice.get(),
+                                                 result.c_str(),
+                                                 PtrAddr(pTextures[i]))))
             {
                 MessageBox(NULL, _T("テクスチャの読み込みに失敗しました"), NULL, MB_OK);
             }
@@ -292,15 +338,14 @@ HRESULT InitD3D(HWND hWnd)
     }
     pD3DXMtrlBuffer->Release();
 
-    D3DXCreateEffectFromFile(
-        g_pd3dDevice,
-        _T("simple.fx"),
-        NULL,
-        NULL,
-        D3DXSHADER_DEBUG,
-        NULL,
-        &pEffect,
-        NULL
+    D3DXCreateEffectFromFile(g_pd3dDevice.get(),
+                             _T("simple.fx"),
+                             NULL,
+                             NULL, 
+                             D3DXSHADER_DEBUG,
+                             NULL,
+                             PtrAddr(pEffect),
+                             NULL
     );
 
     Sprite* sprCursor = new Sprite(g_pd3dDevice);
@@ -349,15 +394,12 @@ HRESULT InitD3D(HWND hWnd)
     return S_OK;
 }
 
-VOID Cleanup()
+static VOID Cleanup()
 {
-    SAFE_RELEASE(pMesh);
-    SAFE_RELEASE(g_pFont);
-    SAFE_RELEASE(g_pd3dDevice);
-    SAFE_RELEASE(g_pD3D);
+    menu.Finalize();
 }
 
-VOID Render()
+static VOID Render()
 {
     if (NULL == g_pd3dDevice)
     {
@@ -383,7 +425,7 @@ VOID Render()
     {
         wchar_t msg[128];
         wcscpy_s(msg, 128, _T("Cキーで倉庫画面を表示"));
-        TextDraw(g_pFont, msg, 0, 0);
+        TextDraw(g_pFont.get(), msg, 0, 0);
 
         pEffect->SetTechnique("BasicTec");
         UINT numPass;
@@ -391,7 +433,7 @@ VOID Render()
         pEffect->BeginPass(0);
         for (DWORD i = 0; i < dwNumMaterials; i++)
         {
-            pEffect->SetTexture("texture1", pTextures[i]);
+            pEffect->SetTexture("texture1", pTextures[i].get());
             pMesh->DrawSubset(i);
         }
         if (bShowMenu)
@@ -406,7 +448,7 @@ VOID Render()
     g_pd3dDevice->Present(NULL, NULL, NULL, NULL);
 }
 
-LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+static LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
     {
@@ -451,7 +493,7 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             std::wstring result = menu.Into();
             auto vs = split(result, ':');
 
-            auto id_ = vs.at(2);
+            auto& id_ = vs.at(2);
             int subId_ = std::stoi(vs.at(3));
 
             if (vs.at(0) == _T("left"))
@@ -476,6 +518,7 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             break;
         }
         case VK_ESCAPE:
+            Cleanup();
             PostQuitMessage(0);
             break;
         }
@@ -520,6 +563,8 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
+extern "C" INT WINAPI wWinMain(_In_ HINSTANCE hInst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ INT);
+
 INT WINAPI wWinMain(_In_ HINSTANCE hInst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ INT)
 {
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, MsgProc, 0L, 0L,
@@ -535,9 +580,17 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInst, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ 
     rect.top = 0;
     rect.left = 0;
 
-    HWND hWnd = CreateWindow(_T("Window1"), _T("Hello DirectX9 World !!"),
-        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom,
-        NULL, NULL, wc.hInstance, NULL);
+    HWND hWnd = CreateWindow(_T("Window1"),
+                             _T("Hello DirectX9 World !!"),
+                             WS_OVERLAPPEDWINDOW,
+                             CW_USEDEFAULT,
+                             CW_USEDEFAULT,
+                             rect.right,
+                             rect.bottom,
+                             NULL,
+                             NULL,
+                             wc.hInstance,
+                             NULL);
 
     if (SUCCEEDED(InitD3D(hWnd)))
     {

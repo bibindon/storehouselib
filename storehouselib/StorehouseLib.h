@@ -76,6 +76,8 @@ public:
               ISprite* sprBackground,
               bool bEnglish);
 
+    void Finalize();
+
     void SetInventoryList(const std::vector<StoreItem>& arg);
     void SetStorehouseList(const std::vector<StoreItem>& arg);
 

@@ -32,6 +32,14 @@ void StorehouseLib::Init(IFont* font,
     m_bEnglish = bEnglish;
 }
 
+void StorehouseLib::Finalize()
+{
+    delete m_sprBackground;
+    delete m_sprCursor;
+    delete m_SE;
+    delete m_font;
+}
+
 void NSStorehouseLib::StorehouseLib::SetInventoryList(const std::vector<StoreItem>& arg)
 {
     m_leftList = arg;
