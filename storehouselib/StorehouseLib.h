@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <chrono>
 
 // アイテムを左右の2列で表示する
 // 左がインベントリ、右が倉庫
@@ -95,6 +96,10 @@ public:
     void CursorOn(const int x, const int y);
     std::wstring Click(const int x, const int y);
     void Draw();
+
+    // ホイール使ってから0.5秒以内はカーソルを無効にするため、ホイールを使ったら
+    // 教えてもらう必要がある
+    void UseWheel();
     
 private:
 
@@ -147,6 +152,8 @@ private:
     int m_rightBegin = 0;
 
     bool m_bEnglish = false;
+
+    std::chrono::system_clock::time_point m_wheelUseTime;
 };
 }
 

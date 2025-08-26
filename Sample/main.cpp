@@ -556,6 +556,7 @@ static LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             menu.Previous();
         }
+        menu.UseWheel();
         break;
     }
     }

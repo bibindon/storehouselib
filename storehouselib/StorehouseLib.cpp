@@ -445,6 +445,16 @@ std::wstring NSStorehouseLib::StorehouseLib::Previous()
 
 void StorehouseLib::CursorOn(const int x, const int y)
 {
+    // ホイール移動して0.5秒以内なら反応しないようにする
+    {
+        auto current = std::chrono::system_clock::now();
+        auto diff = current - m_wheelUseTime;
+        if (diff <= std::chrono::milliseconds(500))
+        {
+            return;
+        }
+    }
+
     int previousCursor = m_leftCursor;
     int previousSelect = m_leftSelect;
     if (LEFT_PANEL_STARTX < x && x <= LEFT_PANEL_STARTX + PANEL_WIDTH)
@@ -919,6 +929,11 @@ void StorehouseLib::Draw()
     }
 
 
+}
+
+void NSStorehouseLib::StorehouseLib::UseWheel()
+{
+    m_wheelUseTime = std::chrono::system_clock::now();
 }
 
 void NSStorehouseLib::StoreItem::SetId(const std::wstring& arg)
