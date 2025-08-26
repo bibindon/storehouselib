@@ -608,7 +608,6 @@ void StorehouseLib::CursorOn(const int x, const int y)
 std::wstring StorehouseLib::Click(const int x, const int y)
 {
     std::wstring result;
-    m_SE->PlayClick();
     if (m_eFocus == eFocus::LEFT)
     {
         if (LEFT_PANEL_STARTX < x && x <= LEFT_PANEL_STARTX + PANEL_WIDTH)
@@ -741,6 +740,12 @@ std::wstring StorehouseLib::Click(const int x, const int y)
             }
         }
     }
+
+    if (!result.empty())
+    {
+        m_SE->PlayClick();
+    }
+
     return result;
 }
 
